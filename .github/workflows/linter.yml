@@ -41,7 +41,7 @@ jobs:
         run: npm run lint
 
       - name: Run formatter (prettier)
-        run: npm run format
+        run: npm run format:check
 
       - name: Lint Codebase
         id: super-linter
