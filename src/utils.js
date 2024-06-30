@@ -2,15 +2,10 @@
   This file contains all the helper functions used in main file.
 */
 
-const fs = require('fs')
-const yaml = require('yaml')
+import fs from 'fs'
+import yaml from 'yaml'
 
-const token = core.getInput('gh_token', { required: true })
-const octokit = github.getOctokit(token)
-const org = core.getInput('org', { required: true })
-const owner = core.getInput('owner', { required: true })
-const repo = core.getInput('repo', { required: true })
-const pr_number = core.getInput('pr_number', { required: true })
+import core from '@actions/core'
 
 /**
  * Computes a list of approvers from a given list of approver strings.
@@ -31,7 +26,7 @@ const pr_number = core.getInput('pr_number', { required: true })
  * Throws an error: "The project "xyz" cannot be verified because it is not of type "user" or "team"!"
  * computeApprovers(['project:xyz']);
  */
-function computeApprovers(approvers) {
+function computeApprovers(client, org, approvers) {
   try {
     let expandedApprovers = []
 
@@ -41,17 +36,20 @@ function computeApprovers(approvers) {
       let principle = element.split(':')[1]
 
       switch (type) {
-        case 'user':
+        case 'user': {
           expandedApprovers.push(element)
           break
-        case 'team':
-          let members = getTeamMembers(principle)
+        }
+        case 'team': {
+          let members = getTeamMembers(client, org, principle)
           expandedApprovers.concat(members)
           break
-        default:
+        }
+        default: {
           core.setFailed(
             `The ${type} "${principle}" cannot be verified because it is not of type "user" or "team"!`
           )
+        }
       }
     }
 
@@ -121,7 +119,7 @@ function getMatchingRule(title, data) {
     for (const rule of data) {
       // Check if the rule contains the key and the value matches the regex pattern
       if (
-        rule.hasOwnProperty('regex') &&
+        Object.prototype.hasOwnProperty.call(rule, 'regex') &&
         isMatchingPattern(title, rule['regex'])
       ) {
         return rule // Return the first matching rule
@@ -140,10 +138,10 @@ function getMatchingRule(title, data) {
  *
  * @throws {Error} - Throws an error if the PR title could not be retrieved.
  */
-async function getPRTitle() {
+async function getPRTitle(client, owner, repo, pr_number) {
   try {
-    return await octokit.request(
-      `GET /repos/${owner}/${repo}/pulls/${pull_number}`,
+    return await client.request(
+      `GET /repos/${owner}/${repo}/pulls/${pr_number}`,
       {
         owner: owner,
         repo: repo,
@@ -181,9 +179,9 @@ async function getReviewers(reviews) {
  *
  * @throws {Error} - Throws an error if the reviews could not be retrieved.
  */
-async function getReviews(owner, repo, pr_number) {
+async function getReviews(client, owner, repo, pr_number) {
   try {
-    return await octokit.request(
+    return await client.request(
       `GET /repos/${owner}/${repo}/pulls/${pr_number}/reviews`,
       {
         owner: owner,
@@ -210,9 +208,9 @@ async function getReviews(owner, repo, pr_number) {
  *
  * @throws {Error} - Throws an error if the team members could not be retrieved.
  */
-async function getTeamMembers(teamSlug) {
+async function getTeamMembers(client, org, teamSlug) {
   try {
-    return await octokit.request(`GET /orgs/${org}/teams/${teamSlug}/members`, {
+    return await client.request(`GET /orgs/${org}/teams/${teamSlug}/members`, {
       org: org,
       team_slug: teamSlug,
       headers: {
@@ -265,7 +263,7 @@ function isMatchingPattern(title, pattern) {
   }
 }
 
-module.exports = {
+export {
   computeApprovers,
   getApprovals,
   getApproversLeft,

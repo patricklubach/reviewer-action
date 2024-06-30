@@ -1,5 +1,5 @@
-const core = require('@actions/core')
-const github = require('@actions/github')
+import core from '@actions/core'
+import github from '@actions/github'
 
 import utils from './utils'
 
@@ -8,12 +8,17 @@ import utils from './utils'
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 
-const filePath = core.getInput('approvers_file', { required: false })
-
 async function run() {
   try {
+    const octokit = github.getOctokit(token)
+    const org = core.getInput('org', { required: true })
+    const owner = core.getInput('owner', { required: true })
+    const pr_number = core.getInput('pr_number', { required: true })
+    const repo = core.getInput('repo', { required: true })
+    const token = core.getInput('gh_token', { required: true })
+
     // Get a list of all reviews of the PR
-    const reviews = utils.getReviews(owner, repo, pr_number)
+    const reviews = utils.getReviews(octokit, owner, repo, pr_number)
 
     // Filter reviews by status == 'APPROVED'
     const approvedReviews = utils.getApprovals(reviews)
@@ -22,25 +27,26 @@ async function run() {
     const reviewers = utils.getReviewers(approvedReviews)
 
     // Get the title of the PR
-    const title = utils.getPRTitle()
+    const title = utils.getPRTitle(octokit, owner, repo, pr_number)
 
     // Get the data from config file
+    const filePath = core.getInput('approvers_file', { required: false })
     const data = utils.getYamlData(filePath)
 
     // Get the rule who matches the PR title
     const rule = utils.getMatchingRule(title, data)
 
     // Get the list of all desired approvers
-    const approvers = utils.computeApprovers(rule['approvers'])
+    const approvers = utils.computeApprovers(octokit, org, rule['approvers'])
 
     // Check if all desired approvers approved PR
     const approversLeft = utils.getApproversLeft(reviewers, approvers)
 
     // If there are approvers left fail action, if not pass check
     if (!approversLeft.length > 0) {
-      console.error('Following approvers are missing:')
+      core.error('Following approvers are missing:')
       for (let i = 0; i < approversLeft.length; i++) {
-        console.log(approversLeft[i])
+        core.info(approversLeft[i])
       }
       throw new Error('Set rule is not fulfilled!')
     }
@@ -50,6 +56,4 @@ async function run() {
   }
 }
 
-module.exports = {
-  run
-}
+export { run }

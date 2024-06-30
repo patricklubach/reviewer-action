@@ -6,7 +6,8 @@ This action checks if all approvals of a PR match given rules.
 
 ### `gh_token`
 
-**Required** The number of the pull request that shall be checked. Either this in conjunction with `repo` and `repo` or `pr_json` must be set.
+**Required** The number of the pull request that shall be checked. Either this
+in conjunction with `repo` and `repo` or `pr_json` must be set.
 
 ### `owner`
 
@@ -22,7 +23,8 @@ This action checks if all approvals of a PR match given rules.
 
 ### `approvers_file`
 
-**Optional** The path to the file where approver rules are defined. The syntax of the file is as follows:
+**Optional** The path to the file where approver rules are defined. The syntax
+of the file is as follows:
 
 ```yaml
 - regex: ^feature/
@@ -50,5 +52,4 @@ None
     approver-file: 'approver.yaml'
     owner: foo
     repo: my-super-repo
-
 ```
