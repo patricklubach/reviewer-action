@@ -1,0 +1,22 @@
+name: 'approver'
+description: 'GitHub action that checks if approval rule matches'
+inputs:
+  approvers_file:
+    description: 'Relative path to the approver file.'
+    required: false
+    default: '.approvers.yaml'
+  gh_token:
+    description: A token to access GitHub
+    required: true
+  owner:
+    description: tbd
+    required: true
+  repo:
+    description: tbd
+    required: true
+  pr_number:
+    description: tbd
+    required: true
+runs:
+  using: 'node20'
+  main: 'index.js'
