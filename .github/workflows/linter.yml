@@ -35,7 +35,10 @@ jobs:
 
       - name: Install Dependencies
         id: install
-        run: npm ci
+        run: npm install --save-dev
+
+      - name: Run ESLint
+        run: eslint . --ext .js,.jsx,.ts,.tsx
 
       - name: Lint Codebase
         id: super-linter
@@ -46,4 +49,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JAVASCRIPT_DEFAULT_STYLE: prettier
           VALIDATE_ALL_CODEBASE: true
+          VALIDATE_JAVASCRIPT_ES: true
+          JAVASCRIPT_ES_CONFIG_FILE: eslint.config.js
           VALIDATE_JSCPD: false
