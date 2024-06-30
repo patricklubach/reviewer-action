@@ -35,10 +35,13 @@ jobs:
 
       - name: Install Dependencies
         id: install
-        run: npm install --save-dev
+        run: npm install --include=dev
 
-      - name: Run ESLint
-        run: eslint . --ext .js,.jsx,.ts,.tsx
+      - name: Run linter (ESlint)
+        run: npm run lint
+
+      - name: Run formatter (prettier)
+        run: npm run format
 
       - name: Lint Codebase
         id: super-linter
