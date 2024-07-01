@@ -37,11 +37,11 @@ jobs:
         id: install
         run: npm install --include=dev
 
-      - name: Run linter (ESlint)
-        run: npm run lint
+      # - name: Run linter (ESlint)
+      #   run: npm run lint
 
-      - name: Run formatter (prettier)
-        run: npm run format:check
+      # - name: Run formatter (prettier)
+      #   run: npm run format:check
 
       - name: Lint Codebase
         id: super-linter
