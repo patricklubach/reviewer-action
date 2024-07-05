@@ -1,7 +1,7 @@
 import core from '@actions/core'
 import github from '@actions/github'
 
-import utils from './utils'
+import utils from './utils.js'
 
 /**
  * The main function for the action.
