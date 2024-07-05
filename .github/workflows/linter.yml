@@ -37,20 +37,20 @@ jobs:
         id: install
         run: npm install --include=dev
 
-      # - name: Run linter (ESlint)
-      #   run: npm run lint
+      - name: Run linter (ESlint)
+        run: npm run lint
 
-      # - name: Run formatter (prettier)
-      #   run: npm run format:check
+      - name: Run formatter (prettier)
+        run: npm run format:check
 
-      - name: Lint Codebase
-        id: super-linter
-        uses: super-linter/super-linter/slim@v6.6.0
-        env:
-          DEFAULT_BRANCH: main
-          FILTER_REGEX_EXCLUDE: dist/**/*
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JAVASCRIPT_DEFAULT_STYLE: prettier
-          VALIDATE_ALL_CODEBASE: true
-          VALIDATE_JSCPD: false
-          ESLINT_USE_FLAT_CONFIG: false
+      # - name: Lint Codebase
+      #   id: super-linter
+      #   uses: super-linter/super-linter/slim@v6.6.0
+      #   env:
+      #     DEFAULT_BRANCH: main
+      #     FILTER_REGEX_EXCLUDE: dist/**/*
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     JAVASCRIPT_DEFAULT_STYLE: prettier
+      #     VALIDATE_ALL_CODEBASE: true
+      #     VALIDATE_JSCPD: false
+      #     ESLINT_USE_FLAT_CONFIG: false
