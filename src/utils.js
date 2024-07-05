@@ -150,10 +150,10 @@ async function getPRTitle(client, owner, repo, pr_number) {
           'X-GitHub-Api-Version': '2022-11-28'
         }
       }
-    )
+    ).title
   } catch (error) {
     core.setFailed(
-      `The reviews could not be retrieved. Details: ${error.message}`
+      `The title could not be retrieved. Details: ${error.message}`
     )
   }
 }
@@ -168,7 +168,7 @@ async function getReviewers(reviews) {
   try {
     return reviews.map(item => item.login)
   } catch (error) {
-    core.setFailed(`Cannot get reviews. Details: ${error.message}`)
+    core.setFailed(`Cannot get reviewers. Details: ${error.message}`)
   }
 }
 
