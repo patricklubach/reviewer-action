@@ -59,6 +59,6 @@ jobs:
         with:
           approvers_file: .approvers.yaml
           gh_token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{github.repository_owner}}
+          owner: ${{ github.repository_owner }}
           repo: approver-action
-          pr_number: ${{github.event.issue.number}}
+          pr_number: ${{ github.event.number }}
