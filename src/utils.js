@@ -68,7 +68,9 @@ function computeApprovers(client, org, approvers) {
  */
 function getApprovals(reviews) {
   try {
-    return reviews.filter((item) => { return item.state === 'APPROVED' })
+    return reviews.filter(item => {
+      return item.state === 'APPROVED'
+    })
   } catch (error) {
     core.setFailed(
       `Cannot filter reviews for approvals. Details: ${error.stack}`
@@ -152,9 +154,7 @@ async function getPRTitle(client, owner, repo, pr_number) {
       }
     ).title
   } catch (error) {
-    core.setFailed(
-      `The title could not be retrieved. Details: ${error.stack}`
-    )
+    core.setFailed(`The title could not be retrieved. Details: ${error.stack}`)
   }
 }
 
@@ -168,7 +168,7 @@ async function getPRTitle(client, owner, repo, pr_number) {
  */
 async function getReviewers(reviews) {
   try {
-    return reviews.map((item) => item.login)
+    return reviews.map(item => item.login)
   } catch (error) {
     core.setFailed(`Cannot get reviewers. Details: ${error.stack}`)
   }
