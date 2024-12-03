@@ -17,6 +17,11 @@ async function run() {
     const token = core.getInput('gh_token', { required: true })
     const octokit = github.getOctokit(token)
 
+    octokit.log.info(`repo: ${repo}`)
+    octokit.log.info(`repo_name: ${repo_name}`)
+    octokit.log.info(`owner: ${owner}`)
+    octokit.log.info(`pr_number: ${pr_number}`)
+
     // Get a list of all reviews of the PR
     const reviews = utils.getReviews(octokit, owner, repo_name, pr_number)
     if(reviews == 0) {
@@ -57,6 +62,7 @@ async function run() {
   } catch(error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error)
+    return
   }
 }
 
