@@ -68,7 +68,7 @@ function computeApprovers(client, org, approvers) {
  */
 function getApprovals(reviews) {
   try {
-    approvals = [];
+    let approvals = [];
     for(let n = 0, len = reviews.length; n < len; ++n) {
       let review = reviews[n];
       if(item.state === 'APPROVED') {
