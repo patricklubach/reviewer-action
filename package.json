@@ -20,8 +20,8 @@
     "JavaScript"
   ],
   "dependencies": {
-    "@octokit/action": "^7.0.0",
-    "octokit": "^4.0.2",
+    "@octokit/action": "^7.0",
+    "octokit": "^4.0",
     "yaml": "^2.4.5"
   },
   "devDependencies": {

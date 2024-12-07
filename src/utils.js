@@ -175,10 +175,10 @@ function getMatchingRule(title, data) {
  *
  * @throws {Error} - Throws an error if the PR title could not be retrieved.
  */
-function getPRTitle(client, owner, repo, pr_number) {
+async function getPRTitle(client, owner, repo, pr_number) {
   console.log('Get pull request title')
   try {
-    return client.request(
+    return await client.request(
       `GET /repos/${owner}/${repo}/pulls/${pr_number}`,
       {
         owner: owner,
@@ -251,10 +251,10 @@ function getReviews(client, owner, repo, pr_number) {
  *
  * @throws {Error} - Throws an error if the team members could not be retrieved.
  */
-function getTeamMembers(client, org, teamSlug) {
+async function getTeamMembers(client, org, teamSlug) {
   console.log('Resolve teams into list of members')
   try {
-    return client.request(`GET /orgs/${org}/teams/${teamSlug}/members`, {
+    return await client.request(`GET /orgs/${org}/teams/${teamSlug}/members`, {
       org: org,
       team_slug: teamSlug,
       headers: {
