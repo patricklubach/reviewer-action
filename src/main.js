@@ -1,4 +1,4 @@
-import Octokit from "octokit";
+import { Octokit } from "octokit";
 
 import * as utils from './utils.js';
 
