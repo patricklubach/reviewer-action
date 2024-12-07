@@ -170,7 +170,7 @@ function getMatchingRule(title, data) {
  *
  * @throws {Error} - Throws an error if the PR title could not be retrieved.
  */
-async function getPRTitle(client, owner, repo, pr_number) {
+function getPRTitle(client, owner, repo, pr_number) {
   console.log('Get pull request title')
   try {
     return client.request(
@@ -197,7 +197,7 @@ async function getPRTitle(client, owner, repo, pr_number) {
  * @returns {string[]} - An array of all reviewer logins.
  *
  */
-async function getReviewers(reviews) {
+function getReviewers(reviews) {
   console.log('Get list of reviewers')
   try {
     return reviews.map(item => item.login)
@@ -213,7 +213,7 @@ async function getReviewers(reviews) {
  *
  * @throws {Error} - Throws an error if the reviews could not be retrieved.
  */
-async function getReviews(client, owner, repo, pr_number) {
+function getReviews(client, owner, repo, pr_number) {
   console.log(`Get reviews of pull request #${pr_number}`)
   client.log.info(`Get reviews of pull request #${pr_number}`)
   try {
@@ -244,7 +244,7 @@ async function getReviews(client, owner, repo, pr_number) {
  *
  * @throws {Error} - Throws an error if the team members could not be retrieved.
  */
-async function getTeamMembers(client, org, teamSlug) {
+function getTeamMembers(client, org, teamSlug) {
   console.log('Resolve teams into list of members')
   try {
     return client.request(`GET /orgs/${org}/teams/${teamSlug}/members`, {
