@@ -56,7 +56,8 @@ function computeApprovers(client, org, approvers) {
 
     return [...new Set(expandedApprovers)]
   } catch(error) {
-    core.setFailed(`Cannot compute approvers list. Details: ${error.stack}`)
+    core.setFailed(`Cannot compute approvers list. Details: ${error.message}`)
+    throw error;
   }
 }
 
@@ -80,8 +81,9 @@ function getApprovals(reviews) {
     return approvals
   } catch(error) {
     core.setFailed(
-      `Cannot filter reviews for approvals. Details: ${error.stack}`
+      `Cannot filter reviews for approvals. Details: ${error.message}`
     )
+    throw error;
   }
 }
 
@@ -109,8 +111,9 @@ function getApproversLeft(reviewers, approvers) {
     return approversLeft
   } catch(error) {
     core.setFailed(
-      `Cannot compute approvers that still need to approve. Details: ${error.stack}`
+      `Cannot compute approvers that still need to approve. Details: ${error.message}`
     )
+    throw error;
   }
 }
 
@@ -131,7 +134,8 @@ function isMatchingPattern(title, pattern) {
     return regex.test(title)
   } catch(error) {
     // If there is an error (e.g., invalid regex), log the error and return false
-    core.setFailed(`Invalid regex pattern. Details: ${error.stack}`)
+    core.setFailed(`Invalid regex pattern. Details: ${error.message}`)
+    throw error;
   }
 }
 
@@ -159,7 +163,8 @@ function getMatchingRule(title, data) {
     }
     throw new Error(`No rule defined for title ${title}`)
   } catch(error) {
-    core.setFailed(`Cannot get matching rule. Details: ${error.stack}`)
+    core.setFailed(`Cannot get matching rule. Details: ${error.message}`)
+    throw error;
   }
 }
 
@@ -185,7 +190,8 @@ function getPRTitle(client, owner, repo, pr_number) {
       }
     ).data.title
   } catch(error) {
-    core.setFailed(`The title could not be retrieved. Details: ${error.stack}`)
+    core.setFailed(`The title could not be retrieved. Details: ${error.message}`)
+    throw error;
   }
 }
 
@@ -202,7 +208,8 @@ function getReviewers(reviews) {
   try {
     return reviews.map(item => item.login)
   } catch(error) {
-    core.setFailed(`Cannot get reviewers. Details: ${error.stack}`)
+    core.setFailed(`Cannot get reviewers. Details: ${error.message}`)
+    throw error;
   }
 }
 
@@ -230,8 +237,9 @@ function getReviews(client, owner, repo, pr_number) {
     ).data
   } catch(error) {
     core.setFailed(
-      `The reviews could not be retrieved from GitHub. Details: ${error.stack}`
+      `The reviews could not be retrieved from GitHub. Details: ${error.message}`
     )
+    throw error;
   }
 }
 
@@ -256,8 +264,9 @@ function getTeamMembers(client, org, teamSlug) {
     })
   } catch(error) {
     core.setFailed(
-      `The team members of team ${teamSlug} could not be retrieved from GitHub. More information: ${error.stack}`
+      `The team members of team ${teamSlug} could not be retrieved from GitHub. More information: ${error.message}`
     )
+    throw error;
   }
 }
 
@@ -276,8 +285,9 @@ function getYamlData(filePath) {
     return yaml.parse(fs.readFileSync(filePath, 'utf8'))
   } catch(error) {
     core.setFailed(
-      `Cannot get data from approvers file. Details: ${error.stack}`
+      `Cannot get data from approvers file. Details: ${error.message}`
     )
+    throw error;
   }
 }
 
