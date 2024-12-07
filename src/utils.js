@@ -188,7 +188,7 @@ function getPRTitle(client, owner, repo, pr_number) {
           'X-GitHub-Api-Version': '2022-11-28'
         }
       }
-    ).data.title
+    )
   } catch(error) {
     core.setFailed(`The title could not be retrieved. Details: ${error.message}`)
     throw error;
@@ -222,7 +222,6 @@ function getReviewers(reviews) {
  */
 function getReviews(client, owner, repo, pr_number) {
   console.log(`Get reviews of pull request #${pr_number}`)
-  client.log.info(`Get reviews of pull request #${pr_number}`)
   try {
     return client.request(
       `GET /repos/${owner}/${repo}/pulls/${pr_number}/reviews`,
@@ -234,7 +233,7 @@ function getReviews(client, owner, repo, pr_number) {
           'X-GitHub-Api-Version': '2022-11-28'
         }
       }
-    ).data
+    )
   } catch(error) {
     core.setFailed(
       `The reviews could not be retrieved from GitHub. Details: ${error.message}`
