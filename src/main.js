@@ -5,7 +5,7 @@ import * as utils from './utils.js';
 
 function run() {
   try {
-    const token = octokit.core.getInput('gh_token', { required: true });
+    const token = Octokit.core.getInput('gh_token', { required: true });
     const octokit =  new Octokit({ auth: token });
     const repo = process.env.GITHUB_REPOSITORY;
     const repo_name = repo.split('/')[1];
