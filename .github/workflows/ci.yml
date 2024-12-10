@@ -58,5 +58,5 @@ jobs:
         uses: ./
         with:
           approvers_file: .approvers.yaml
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           pr_number: ${{ github.event.number }}
