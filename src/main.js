@@ -52,7 +52,7 @@ async function run() {
 
     // If there are approvers left fail action, if not pass check
     if(approversLeft.length > 0) {
-      core.info('Approvals of the following reviewer are missing:');
+      core.info('Approvals of the following reviewers are missing:');
       for(const approver of approversLeft) {
         core.info(`- ${approver}`);
       }

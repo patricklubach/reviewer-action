@@ -68,7 +68,7 @@ function getReviewers(reviews) {
 }
 
 function getPRTitle(client, owner, repo, pr_number) {
-  core.info('Get pull request title')
+  core.info('Getting pull request title')
   try {
     const url = `/repos/${owner}/${repo}/pulls/${pr_number}`
     core.debug(`Fetching pull request from endpoint: ${url}`)
@@ -138,7 +138,7 @@ function isMatchingPattern(title, pattern) {
 }
 
 function computeApprovers(client, org, approvers) {
-  core.info("Resolve list of approvers")
+  core.info("Resolving list of approvers")
   try {
     let expandedApprovers = []
 
@@ -174,7 +174,7 @@ function computeApprovers(client, org, approvers) {
 }
 
 function getApproversLeft(reviewers, approvers) {
-  core.info('Compute list of approvers who have not approved yet')
+  core.info('Computing list of approvers who have not approved yet')
   try {
     let approversLeft = []
 
@@ -184,7 +184,7 @@ function getApproversLeft(reviewers, approvers) {
         approversLeft.push(approver)
       }
     }
-    core.info(`Following approvers are left: ${approversLeft}`)
+    core.debug(`Following approvers are left: ${approversLeft}`)
     return approversLeft
   } catch(error) {
     core.error(
