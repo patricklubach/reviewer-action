@@ -1,4 +1,3 @@
-const core = require('@actions/core');
 import Octokit from "octokit";
 
 import * as utils from './utils.js';
@@ -9,8 +8,8 @@ function run() {
     const repo = process.env.GITHUB_REPOSITORY;
     const repo_name = repo.split('/')[1];
     const owner = process.env.GITHUB_REPOSITORY_OWNER;
-    const pr_number = core.getInput('pr_number', { required: true });
-    const token = core.getInput('gh_token', { required: true });
+    const pr_number = octokit.core.getInput;
+    const token = octokit.core.getInput('gh_token', { required: true });
     const octokit =  new Octokit({ auth: token });
 
     console.log(`repo: ${repo}`);
@@ -21,10 +20,10 @@ function run() {
     // Get a list of all reviews of the PR
     const { data: reviews } = utils.getReviews(octokit, owner, repo_name, pr_number)
     if(reviews == 0) {
-      core.info('There are no reviews to check');
+      octokit.core.info('There are no reviews to check');
       return ;
     } else {
-      core.info(`There are ${reviews.length} reviews to check`);
+      octokit.core.info(`There are ${reviews.length} reviews to check`);
     }
 
     // Filter reviews by status == 'APPROVED'
@@ -37,7 +36,7 @@ function run() {
     const { data: pullRequest } = utils.getPRTitle(octokit, owner, repo_name, pr_number);
 
     // Get the data from config file
-    const filePath = core.getInput('approvers_file', { required: false });
+    const filePath = octokit.core.getInput('approvers_file', { required: false });
     const data = utils.getYamlData(filePath);
 
     // Get the rule who matches the PR title
@@ -51,15 +50,15 @@ function run() {
 
     // If there are approvers left fail action, if not pass check
     if(!approversLeft.length > 0) {
-      core.error('Following approvers are missing:');
+      octokit.core.error('Following approvers are missing:');
       for(let i = 0; i < approversLeft.length; i++) {
-        core.info(approversLeft[i]);
+        octokit.core.info(approversLeft[i]);
       }
       throw new Error('Set rule is not fulfilled!');
     }
   } catch(error) {
     // Fail the workflow run if an error occurs
-    core.setFailed(error);
+    Octokit.core.setFailed(error);
     throw error;
   }
 }
