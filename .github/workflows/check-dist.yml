@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Dependencies
         id: install
-        run: npm ci
+        run: npm ci --include=dev
 
       - name: Build dist/ Directory
         id: build
