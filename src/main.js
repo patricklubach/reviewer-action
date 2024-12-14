@@ -10,15 +10,15 @@ import * as utils from './utils.js'
 
 async function run() {
   try {
-    const org = core.getInput('org', { required: false })
-    const owner = core.getInput('owner', { required: true })
-    const repo = core.getInput('repo', { required: true })
+    const repo = procvess.env.GITHUB_ACTION_REPOSITORY
+    const repo_name = repo.split('/')[1]
+    const owner = procvess.env.GITHUB_REPOSITORY_OWNER
     const pr_number = core.getInput('pr_number', { required: true })
     const token = core.getInput('gh_token', { required: true })
     const octokit = github.getOctokit(token)
 
     // Get a list of all reviews of the PR
-    const reviews = utils.getReviews(octokit, owner, repo, pr_number)
+    const reviews = utils.getReviews(octokit, owner, repo_name, pr_number)
     if (reviews == 0) {
       core.info('There are no reviews to check')
       return
@@ -31,7 +31,7 @@ async function run() {
     const reviewers = utils.getReviewers(approvedReviews)
 
     // Get the title of the PR
-    const title = utils.getPRTitle(octokit, owner, repo, pr_number)
+    const title = utils.getPRTitle(octokit, owner, repo_name, pr_number)
 
     // Get the data from config file
     const filePath = core.getInput('approvers_file', { required: false })
