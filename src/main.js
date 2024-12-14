@@ -19,10 +19,10 @@ async function run() {
 
     // Get a list of all reviews of the PR
     const reviews = utils.getReviews(octokit, owner, repo, pr_number)
-    if (isEmpty(reviews)) {
-        core.info("There are no reviews to check")
-        exit()
-    } 
+    if (reviews == 0) {
+      core.info('There are no reviews to check')
+      return
+    }
 
     // Filter reviews by status == 'APPROVED'
     const approvedReviews = utils.getApprovals(reviews)
