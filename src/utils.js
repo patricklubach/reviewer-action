@@ -68,7 +68,7 @@ function computeApprovers(client, org, approvers) {
  */
 function getApprovals(reviews) {
   try {
-    return reviews.filter(item => item.status === 'APPROVED')
+    return reviews.filter((item) => { return item.state === 'APPROVED' })
   } catch (error) {
     core.setFailed(
       `Cannot filter reviews for approvals. Details: ${error.stack}`
@@ -134,7 +134,7 @@ function getMatchingRule(title, data) {
 /**
  * Retrieves the title of a pull request (PR) from a GitHub repository.
  *
- * @returns {Promise<Object>} - A promise that resolves to the response object containing the PR details.
+ * @returns {string} - A promise that resolves to the response object containing the PR details.
  *
  * @throws {Error} - Throws an error if the PR title could not be retrieved.
  */
@@ -161,12 +161,14 @@ async function getPRTitle(client, owner, repo, pr_number) {
 /**
  * Retrieves the reviews for a pull request (PR) from a GitHub repository.
  *
+ * @param {Object[]} reviews - A list of reviews
+ *
  * @returns {string[]} - An array of all reviewer logins.
  *
  */
 async function getReviewers(reviews) {
   try {
-    return reviews.map(item => item.login)
+    return reviews.map((item) => item.login)
   } catch (error) {
     core.setFailed(`Cannot get reviewers. Details: ${error.stack}`)
   }
