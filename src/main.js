@@ -5,12 +5,12 @@ import * as utils from './utils.js';
 
 function run() {
   try {
+    const octokit =  new Octokit({ auth: token });
     const repo = process.env.GITHUB_REPOSITORY;
     const repo_name = repo.split('/')[1];
     const owner = process.env.GITHUB_REPOSITORY_OWNER;
     const pr_number = octokit.core.getInput;
     const token = octokit.core.getInput('gh_token', { required: true });
-    const octokit =  new Octokit({ auth: token });
 
     console.log(`repo: ${repo}`);
     console.log(`repo_name: ${repo_name}`);
