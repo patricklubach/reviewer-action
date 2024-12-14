@@ -56,7 +56,7 @@ function computeApprovers(client, org, approvers) {
 
     return [...new Set(expandedApprovers)]
   } catch(error) {
-    Octokit.core.setFailed(`Cannot compute approvers list. Details: ${error.message}`)
+    console.log(`Cannot compute approvers list. Details: ${error.message}`)
     throw error;
   }
 }
@@ -80,7 +80,7 @@ function getApprovals(reviews) {
     }
     return approvals
   } catch(error) {
-    Octokit.core.setFailed(
+    console.log(
       `Cannot filter reviews for approvals. Details: ${error.message}`
     )
     throw error;
@@ -110,7 +110,7 @@ function getApproversLeft(reviewers, approvers) {
 
     return approversLeft
   } catch(error) {
-    Octokit.core.setFailed(
+    console.log(
       `Cannot compute approvers that still need to approve. Details: ${error.message}`
     )
     throw error;
@@ -134,7 +134,7 @@ function isMatchingPattern(title, pattern) {
     return regex.test(title)
   } catch(error) {
     // If there is an error (e.g., invalid regex), log the error and return false
-    Octokit.core.setFailed(`Invalid regex pattern. Details: ${error.message}`)
+    console.log(`Invalid regex pattern. Details: ${error.message}`)
     throw error;
   }
 }
@@ -163,7 +163,7 @@ function getMatchingRule(title, data) {
     }
     throw new Error(`No rule defined for title ${title}`)
   } catch(error) {
-    Octokit.core.setFailed(`Cannot get matching rule. Details: ${error.message}`)
+    console.log(`Cannot get matching rule. Details: ${error.message}`)
     throw error;
   }
 }
@@ -190,7 +190,7 @@ async function getPRTitle(client, owner, repo, pr_number) {
       }
     )
   } catch(error) {
-    Octokit.core.setFailed(`The title could not be retrieved. Details: ${error.message}`)
+    console.log(`The title could not be retrieved. Details: ${error.message}`)
     throw error;
   }
 }
@@ -208,7 +208,7 @@ function getReviewers(reviews) {
   try {
     return reviews.map(item => item.login)
   } catch(error) {
-    Octokit.core.setFailed(`Cannot get reviewers. Details: ${error.message}`)
+    console.log(`Cannot get reviewers. Details: ${error.message}`)
     throw error;
   }
 }
@@ -235,7 +235,7 @@ function getReviews(client, owner, repo, pr_number) {
       }
     )
   } catch(error) {
-    Octokit.core.setFailed(
+    console.log(
       `The reviews could not be retrieved from GitHub. Details: ${error.message}`
     )
     throw error;
@@ -262,7 +262,7 @@ async function getTeamMembers(client, org, teamSlug) {
       }
     })
   } catch(error) {
-    Octokit.core.setFailed(
+    console.log(
       `The team members of team ${teamSlug} could not be retrieved from GitHub. More information: ${error.message}`
     )
     throw error;
@@ -283,7 +283,7 @@ function getYamlData(filePath) {
   try {
     return yaml.parse(fs.readFileSync(filePath, 'utf8'))
   } catch(error) {
-    Octokit.core.setFailed(
+    console.log(
       `Cannot get data from approvers file. Details: ${error.message}`
     )
     throw error;
