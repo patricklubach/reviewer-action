@@ -12,7 +12,8 @@
     "format:write": "npx prettier --write .",
     "format:check": "npx prettier --check .",
     "lint": "npx eslint .",
-    "package": "npx ncc build src/index.js -o dist --source-map --license licenses.txt"
+    "package": "npx ncc build src/index.js -o dist --source-map --license licenses.txt",
+    "test:local": "act -W .github/workflows/ci.yml -s GITHUB_TOKEN=\"$(gh auth token)\""
   },
   "keywords": [
     "GitHub",
