@@ -6,8 +6,7 @@ This action checks if all approvals of a PR match given rules.
 
 ### `gh_token`
 
-**Required** The number of the pull request that shall be checked. Either this
-in conjunction with `repo` and `repo` or `pr_json` must be set.
+**Required** The Github token to access the repository to check.
 
 ### `owner`
 
@@ -49,7 +48,9 @@ None
   id: approver
   uses: actions/approver-action@e76147da8e5c81eaf017dede5645551d4b94427b
   with:
+    gh_token: ******
     approver-file: 'approver.yaml'
     owner: foo
     repo: my-super-repo
+    pr_number: 10
 ```
