@@ -30,12 +30,12 @@ function computeApprovers(client, org, approvers) {
   try {
     let expandedApprovers = []
 
-    for (let i = 0; i < approvers.length; i++) {
+    for(let i = 0; i < approvers.length; i++) {
       let element = approvers[i]
       let type = element.split(':')[0]
       let principle = element.split(':')[1]
 
-      switch (type) {
+      switch(type) {
         case 'user': {
           expandedApprovers.push(element)
           break
@@ -54,7 +54,7 @@ function computeApprovers(client, org, approvers) {
     }
 
     return [...new Set(expandedApprovers)]
-  } catch (error) {
+  } catch(error) {
     core.setFailed(`Cannot compute approvers list. Details: ${error.stack}`)
   }
 }
@@ -64,14 +64,19 @@ function computeApprovers(client, org, approvers) {
  *
  * @param {Object[]} reviews - The list of reviews to filter. Each object should have a "status" key.
  *
- * @returns {Object[]} - A new list containing only the objects with "status" equal to "APPROVED".
+ * @returns {Array} - A new list containing only the objects with "status" equal to "APPROVED".
  */
 function getApprovals(reviews) {
   try {
-    return reviews.filter(item => {
-      return item.state === 'APPROVED'
-    })
-  } catch (error) {
+    approvals = [];
+    for(let n = 0, len = reviews.length; n < len; ++n) {
+      let review = reviews[n];
+      if(item.state === 'APPROVED') {
+        approvals.push(review);
+      }
+    }
+    return approvals;
+  } catch(error) {
     core.setFailed(
       `Cannot filter reviews for approvals. Details: ${error.stack}`
     )
@@ -90,16 +95,16 @@ function getApproversLeft(reviewers, approvers) {
   try {
     let approversLeft = Array.from(approvers)
 
-    for (let i = 0; i < approvers.length; i++) {
+    for(let i = 0; i < approvers.length; i++) {
       let approver = approvers[i]
-      if (reviewers.includes(approver)) {
+      if(reviewers.includes(approver)) {
         let index = approversLeft.indexOf(approver)
         approversLeft.splice(index, 1)
       }
     }
 
     return approversLeft
-  } catch (error) {
+  } catch(error) {
     core.setFailed(
       `Cannot compute approvers that still need to approve. Details: ${error.stack}`
     )
@@ -118,9 +123,9 @@ function getApproversLeft(reviewers, approvers) {
  */
 function getMatchingRule(title, data) {
   try {
-    for (const rule of data) {
+    for(const rule of data) {
       // Check if the rule contains the key and the value matches the regex pattern
-      if (
+      if(
         Object.prototype.hasOwnProperty.call(rule, 'regex') &&
         isMatchingPattern(title, rule['regex'])
       ) {
@@ -128,7 +133,7 @@ function getMatchingRule(title, data) {
       }
     }
     throw new Error(`No rule defined for title ${title}`)
-  } catch (error) {
+  } catch(error) {
     core.setFailed(`Cannot get matching rule. Details: ${error.stack}`)
   }
 }
@@ -153,7 +158,7 @@ async function getPRTitle(client, owner, repo, pr_number) {
         }
       }
     ).title
-  } catch (error) {
+  } catch(error) {
     core.setFailed(`The title could not be retrieved. Details: ${error.stack}`)
   }
 }
@@ -169,7 +174,7 @@ async function getPRTitle(client, owner, repo, pr_number) {
 async function getReviewers(reviews) {
   try {
     return reviews.map(item => item.login)
-  } catch (error) {
+  } catch(error) {
     core.setFailed(`Cannot get reviewers. Details: ${error.stack}`)
   }
 }
@@ -193,8 +198,8 @@ async function getReviews(client, owner, repo, pr_number) {
           'X-GitHub-Api-Version': '2022-11-28'
         }
       }
-    )
-  } catch (error) {
+    ).data
+  } catch(error) {
     core.setFailed(
       `The reviews could not be retrieved from GitHub. Details: ${error.stack}`
     )
@@ -219,7 +224,7 @@ async function getTeamMembers(client, org, teamSlug) {
         'X-GitHub-Api-Version': '2022-11-28'
       }
     })
-  } catch (error) {
+  } catch(error) {
     core.setFailed(
       `The team members of team ${teamSlug} could not be retrieved from GitHub. More information: ${error.stack}`
     )
@@ -238,7 +243,7 @@ async function getTeamMembers(client, org, teamSlug) {
 function getYamlData(filePath) {
   try {
     return yaml.parse(fs.readFileSync(filePath, 'utf8'))
-  } catch (error) {
+  } catch(error) {
     core.setFailed(
       `Cannot get data from approvers file. Details: ${error.stack}`
     )
@@ -259,7 +264,7 @@ function isMatchingPattern(title, pattern) {
 
     // Test the string against the regex pattern
     return regex.test(title)
-  } catch (error) {
+  } catch(error) {
     // If there is an error (e.g., invalid regex), log the error and return false
     core.setFailed(`Invalid regex pattern. Details: ${error.stack}`)
   }
