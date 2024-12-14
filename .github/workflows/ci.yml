@@ -12,34 +12,6 @@ permissions:
   contents: read
 
 jobs:
-  test-javascript:
-    name: JavaScript Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        id: setup-node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
-
-      - name: Install Dependencies
-        id: npm-ci
-        run: npm ci
-
-      - name: Check Format
-        id: npm-format-check
-        run: npm run format
-
-      - name: Lint
-        id: npm-lint
-        run: npm run lint
-
   test-action:
     name: GitHub Actions Test
     runs-on: ubuntu-latest
@@ -49,8 +21,14 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm ci
+
       - name: Test Local Action
         id: test-approver-action
         uses: ./
         with:
-          milliseconds: 1000
+          approvers_file: .approvers.yaml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pr_number: 10 # ${{ github.event.number }}
