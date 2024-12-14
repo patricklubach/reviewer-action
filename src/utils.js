@@ -71,7 +71,7 @@ function getApprovals(reviews) {
     return reviews.filter(item => item.status === 'APPROVED')
   } catch (error) {
     core.setFailed(
-      `Cannot filter reviews for approvals. Details: ${error.message}`
+      `Cannot filter reviews for approvals. Details: ${error}`
     )
   }
 }
