@@ -173,7 +173,7 @@ function getMatchingRule(title, data) {
 async function getPRTitle(client, owner, repo, pr_number) {
   console.log('Get pull request title')
   try {
-    return await client.request(
+    return client.request(
       `GET /repos/${owner}/${repo}/pulls/${pr_number}`,
       {
         owner: owner,
@@ -217,7 +217,7 @@ async function getReviews(client, owner, repo, pr_number) {
   console.log(`Get reviews of pull request #${pr_number}`)
   client.log.info(`Get reviews of pull request #${pr_number}`)
   try {
-    return await client.request(
+    return client.request(
       `GET /repos/${owner}/${repo}/pulls/${pr_number}/reviews`,
       {
         owner: owner,
@@ -247,7 +247,7 @@ async function getReviews(client, owner, repo, pr_number) {
 async function getTeamMembers(client, org, teamSlug) {
   console.log('Resolve teams into list of members')
   try {
-    return await client.request(`GET /orgs/${org}/teams/${teamSlug}/members`, {
+    return client.request(`GET /orgs/${org}/teams/${teamSlug}/members`, {
       org: org,
       team_slug: teamSlug,
       headers: {
