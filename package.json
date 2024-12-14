@@ -7,9 +7,10 @@
   "license": "MIT",
   "scripts": {
     "bundle": "npm run format:write && npm run package",
-    "lint": "eslint .",
     "format:write": "npx prettier --write .",
-    "format:check": "npx prettier --check ."
+    "format:check": "npx prettier --check .",
+    "lint": "eslint .",
+    "package": "npx ncc build src/index.js -o dist --source-map --license licenses.txt"
   },
   "keywords": [
     "GitHub",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
+    "@vercel/ncc": "^0.38.1",
     "eslint": "^8.57.0",
     "prettier": "3.3.2"
   },
