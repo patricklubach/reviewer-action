@@ -2,90 +2,89 @@
   This file contains all the helper functions used in main file.
 */
 
-import fs from 'fs';
-import YAML from 'yaml';
+import fs from 'fs'
+import YAML from 'yaml'
 
-import * as core from '@actions/core';
-
+import * as core from '@actions/core'
 
 function getReviews(client, owner, repo, pr_number) {
   core.info(`Get reviews of pull request #${pr_number}`)
   try {
     const url = `/repos/${owner}/${repo}/pulls/${pr_number}/reviews`
     core.debug(`Fetching reviews from endpoint: ${url}`)
-    return client.request(
-      `GET ${url}`,
-      {
-        owner: owner,
-        repo: repo,
-        pull_number: pr_number,
-        headers: {
-          'X-GitHub-Api-Version': '2022-11-28'
-        }
+    return client.request(`GET ${url}`, {
+      owner: owner,
+      repo: repo,
+      pull_number: pr_number,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
       }
-    )
+    })
   } catch(error) {
     core.error(
       `The reviews could not be retrieved from GitHub. Details: ${error.message}`
     )
-    throw error;
+    throw error
   }
 }
 
 function getApprovals(reviews) {
-  core.info("Getting list of approvals")
+  core.info('Getting list of approvals')
   try {
     let approvals = []
     for(let n = 0, len = reviews.length; n < len; ++n) {
       let review = reviews[n]
-      core.debug(`User ${review.user.login} ${review.state} PR at ${review.submitted_at}`)
+      core.debug(
+        `User ${review.user.login} ${review.state} PR at ${review.submitted_at}`
+      )
       if(review.state === 'APPROVED') {
         approvals.push(review)
       }
     }
     return approvals
   } catch(error) {
-    core.error(
-      `Cannot filter reviews for approvals. Details: ${error.message}`
-    )
-    throw error;
+    core.error(`Cannot filter reviews for approvals. Details: ${error.message}`)
+    throw error
   }
 }
 
-function getReviewers(reviews) {
-  core.info('Getting list of reviewers')
+function getApprovers(reviews) {
+  core.info('Filter reviews for users which approved yet')
   try {
     let reviewers = []
-    for (const review of reviews) {
-      reviewers.push(review.user.login)
+    for(const review of reviews) {
+      if(review.state == 'APPROVED') {
+        reviewers.push([
+          "user",
+          review.user.login].join(":"))
+      }
     }
-    core.debug(`Reviewers are: ${reviewers}`)
+    core.info(`Following user reviewed and approved yet: ${reviewers}`)
     return reviewers
   } catch(error) {
     core.error(`Cannot get reviewers. Details: ${error.message}`)
-    throw error;
+    throw error
   }
 }
 
-function getPRTitle(client, owner, repo, pr_number) {
-  core.info('Getting pull request title')
+function getPullRequest(client, owner, repo, pr_number) {
+  core.info('Getting pull request')
   try {
     const url = `/repos/${owner}/${repo}/pulls/${pr_number}`
     core.debug(`Fetching pull request from endpoint: ${url}`)
-    return client.request(
-      `GET ${url}`,
-      {
-        owner: owner,
-        repo: repo,
-        pull_number: pr_number,
-        headers: {
-          'X-GitHub-Api-Version': '2022-11-28'
-        }
+    return client.request(`GET ${url}`, {
+      owner: owner,
+      repo: repo,
+      pull_number: pr_number,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
       }
-    )
+    })
   } catch(error) {
-    core.error(`The title could not be retrieved. Details: ${error.message}`)
-    throw error;
+    core.error(
+      `The pull request could not be retrieved. Details: ${error.message}`
+    )
+    throw error
   }
 }
 
@@ -94,15 +93,13 @@ function getYamlData(filePath) {
   try {
     return YAML.parse(fs.readFileSync(filePath, 'utf8'))
   } catch(error) {
-    core.error(
-      `Cannot get data from approvers file. Details: ${error.message}`
-    )
-    throw error;
+    core.error(`Cannot get data from approvers file. Details: ${error.message}`)
+    throw error
   }
 }
 
 function getMatchingRule(title, data) {
-  core.info('Finding matching rule that matches pull request title')
+  core.info(`Finding matching rule that matches pull request title ${title}`)
   try {
     for(const rule of data) {
       // Check if the rule contains the key and the value matches the regex pattern
@@ -110,14 +107,14 @@ function getMatchingRule(title, data) {
         Object.prototype.hasOwnProperty.call(rule, 'regex') &&
         isMatchingPattern(title, rule['regex'])
       ) {
-        core.debug(`Rule with regex "${rule.regex}" matches title "${title}"`)
+        core.info(`Rule with regex "${rule.regex}" matches title "${title}"`)
         return rule // Return the first matching rule
       }
     }
     throw new Error(`No rule defined for title ${title}`)
   } catch(error) {
     core.error(`Cannot get matching rule. Details: ${error.message}`)
-    throw error;
+    throw error
   }
 }
 
@@ -133,23 +130,22 @@ function isMatchingPattern(title, pattern) {
   } catch(error) {
     // If there is an error (e.g., invalid regex), log the error and return false
     core.error(`Invalid regex pattern. Details: ${error.message}`)
-    throw error;
+    throw error
   }
 }
 
 function computeApprovers(client, org, approvers) {
-  core.info("Resolving list of approvers")
+  core.info('Resolving teams from list of approvers')
   try {
     let expandedApprovers = []
 
     for(let i = 0; i < approvers.length; i++) {
-      let element = approvers[i]
-      let type = element.split(':')[0]
-      let principle = element.split(':')[1]
+      let approver = approvers[i]
+      let [type, principle] = approver.split(':')
 
       switch(type) {
         case 'user': {
-          expandedApprovers.push(element)
+          expandedApprovers.push(approver)
           break
         }
         case 'team': {
@@ -169,28 +165,27 @@ function computeApprovers(client, org, approvers) {
     return [...new Set(expandedApprovers)]
   } catch(error) {
     core.error(`Cannot compute approvers list. Details: ${error.message}`)
-    throw error;
+    throw error
   }
 }
 
-function getApproversLeft(reviewers, approvers) {
-  core.info('Computing list of approvers who have not approved yet')
+function getApproversLeft(desiredApprovers, approvers) {
+  core.info('Checking if approvals are still needed')
   try {
-    let approversLeft = []
+    core.debug(`Users which approved yet: ${approvers.sort()}`)
+    core.debug(`Users which need to approve: ${desiredApprovers.sort()}`)
 
-    for (const approver of approvers) {
-      if(! reviewers.includes(approver)) {
-        core.debug(`User ${approver} did not approve yet`)
-        approversLeft.push(approver)
-      }
+    if(JSON.stringify(desiredApprovers) === JSON.stringify(approvers)) {
+      core.debug(`Successfully checked`)
+      return
+    } else {
+      throw new Error('There are still approvals needed.')
     }
-    core.debug(`Following approvers are left: ${approversLeft}`)
-    return approversLeft
   } catch(error) {
     core.error(
-      `Cannot compute approvers that still need to approve. Details: ${error.message}`
+      `Check is not fulfilled. Details: ${error.message}`
     )
-    throw error;
+    throw error
   }
 }
 
@@ -208,21 +203,19 @@ async function getTeamMembers(client, org, teamSlug) {
     core.error(
       `The team members of team ${teamSlug} could not be retrieved from GitHub. More information: ${error.message}`
     )
-    throw error;
+    throw error
   }
 }
-
 
 export {
   computeApprovers,
   getApprovals,
+  getApprovers,
   getApproversLeft,
   getMatchingRule,
-  getPRTitle,
-  getReviewers,
+  getPullRequest,
   getReviews,
   getTeamMembers,
   getYamlData,
   isMatchingPattern
-};
-
+}

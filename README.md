@@ -16,7 +16,7 @@ of the file is as follows:
 ```yaml
 - regex: ^feature/
   approver:
-    - group:MyApproverGroup
+    - team:MyApproverGroup
     - user:RobotUser9
 - regex: ^bugfix/
   approver:
@@ -36,6 +36,15 @@ None
   id: approver
   uses: actions/approver-action@e76147da8e5c81eaf017dede5645551d4b94427b
   with:
-    gh_token: { { secrets.gh_token } }
+    gh_token: {{ secrets.gh_token }}
     approver-file: 'approver.yaml'
+```
+
+## Test locally
+
+To test the action locally install [`act`](https://github.com/nektos/act) and
+run:
+
+```bash
+npm run test:local
 ```
