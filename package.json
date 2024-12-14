@@ -7,13 +7,14 @@
   "license": "MIT",
   "scripts": {
     "env": "docker run -it --rm -v $PWD:/workspace --entrypoint scripts/ci.sh --workdir /workspace node:23",
+    "update:lock": "npm update --save --include=dev",
     "dev": "npm ci --include=dev && npm run bundle",
     "bundle": "npm run format:write && npm run package",
     "format:write": "npx prettier --write .",
     "format:check": "npx prettier --check .",
     "lint": "npx eslint .",
     "package": "npx ncc build src/index.js -o dist --source-map --license licenses.txt",
-    "test:local": "act -W .github/workflows/ci.yml -s GITHUB_TOKEN=\"$(gh auth token)\""
+    "test:local": "act pull_request -e event.json -W .github/workflows/ci.yml -s GITHUB_TOKEN=\"$(gh auth token)\""
   },
   "keywords": [
     "GitHub",
@@ -21,11 +22,11 @@
     "JavaScript"
   ],
   "dependencies": {
-    "@actions/core": "^1.11",
-    "@octokit/action": "^7.0",
-    "@octokit/core": "^6.1",
-    "octokit": "^4.0",
-    "yaml": "^2.4"
+    "@actions/core": "^1.11.1",
+    "@octokit/action": "^7.0.0",
+    "@octokit/core": "^6.1.2",
+    "octokit": "^4.0.2",
+    "yaml": "^2.6.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

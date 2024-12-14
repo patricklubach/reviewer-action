@@ -31,4 +31,4 @@ jobs:
         with:
           approvers_file: .approvers.yaml
           token: ${{ secrets.GITHUB_TOKEN }}
-          pr_number: 10 # ${{ github.event.number }}
+          pr_number: ${{ github.event.number }}
