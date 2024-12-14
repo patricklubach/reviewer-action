@@ -10,12 +10,12 @@ import * as utils from './utils.js'
 
 async function run() {
   try {
-    const octokit = github.getOctokit(token)
     const org = core.getInput('org', { required: true })
     const owner = core.getInput('owner', { required: true })
     const pr_number = core.getInput('pr_number', { required: true })
     const repo = core.getInput('repo', { required: true })
     const token = core.getInput('gh_token', { required: true })
+    const octokit = github.getOctokit(token)
 
     // Get a list of all reviews of the PR
     const reviews = utils.getReviews(octokit, owner, repo, pr_number)
