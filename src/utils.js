@@ -2,10 +2,10 @@
   This file contains all the helper functions used in main file.
 */
 
-import fs from 'fs'
-import yaml from 'yaml'
+import fs from 'fs';
+import yaml from 'yaml';
 
-import core from '@actions/core'
+import Octokit from "octokit";
 
 /**
  * Computes a list of approvers from a given list of approver strings.
@@ -47,7 +47,7 @@ function computeApprovers(client, org, approvers) {
           break
         }
         default: {
-          core.setFailed(
+          Octokit.core.setFailed(
             `The ${type} "${principle}" cannot be verified because it is not of type "user" or "team"!`
           )
         }
@@ -56,7 +56,7 @@ function computeApprovers(client, org, approvers) {
 
     return [...new Set(expandedApprovers)]
   } catch(error) {
-    core.setFailed(`Cannot compute approvers list. Details: ${error.message}`)
+    Octokit.core.setFailed(`Cannot compute approvers list. Details: ${error.message}`)
     throw error;
   }
 }
@@ -80,7 +80,7 @@ function getApprovals(reviews) {
     }
     return approvals
   } catch(error) {
-    core.setFailed(
+    Octokit.core.setFailed(
       `Cannot filter reviews for approvals. Details: ${error.message}`
     )
     throw error;
@@ -110,7 +110,7 @@ function getApproversLeft(reviewers, approvers) {
 
     return approversLeft
   } catch(error) {
-    core.setFailed(
+    Octokit.core.setFailed(
       `Cannot compute approvers that still need to approve. Details: ${error.message}`
     )
     throw error;
@@ -134,7 +134,7 @@ function isMatchingPattern(title, pattern) {
     return regex.test(title)
   } catch(error) {
     // If there is an error (e.g., invalid regex), log the error and return false
-    core.setFailed(`Invalid regex pattern. Details: ${error.message}`)
+    Octokit.core.setFailed(`Invalid regex pattern. Details: ${error.message}`)
     throw error;
   }
 }
@@ -163,7 +163,7 @@ function getMatchingRule(title, data) {
     }
     throw new Error(`No rule defined for title ${title}`)
   } catch(error) {
-    core.setFailed(`Cannot get matching rule. Details: ${error.message}`)
+    Octokit.core.setFailed(`Cannot get matching rule. Details: ${error.message}`)
     throw error;
   }
 }
@@ -190,7 +190,7 @@ async function getPRTitle(client, owner, repo, pr_number) {
       }
     )
   } catch(error) {
-    core.setFailed(`The title could not be retrieved. Details: ${error.message}`)
+    Octokit.core.setFailed(`The title could not be retrieved. Details: ${error.message}`)
     throw error;
   }
 }
@@ -208,7 +208,7 @@ function getReviewers(reviews) {
   try {
     return reviews.map(item => item.login)
   } catch(error) {
-    core.setFailed(`Cannot get reviewers. Details: ${error.message}`)
+    Octokit.core.setFailed(`Cannot get reviewers. Details: ${error.message}`)
     throw error;
   }
 }
@@ -235,7 +235,7 @@ function getReviews(client, owner, repo, pr_number) {
       }
     )
   } catch(error) {
-    core.setFailed(
+    Octokit.core.setFailed(
       `The reviews could not be retrieved from GitHub. Details: ${error.message}`
     )
     throw error;
@@ -262,7 +262,7 @@ async function getTeamMembers(client, org, teamSlug) {
       }
     })
   } catch(error) {
-    core.setFailed(
+    Octokit.core.setFailed(
       `The team members of team ${teamSlug} could not be retrieved from GitHub. More information: ${error.message}`
     )
     throw error;
@@ -283,7 +283,7 @@ function getYamlData(filePath) {
   try {
     return yaml.parse(fs.readFileSync(filePath, 'utf8'))
   } catch(error) {
-    core.setFailed(
+    Octokit.core.setFailed(
       `Cannot get data from approvers file. Details: ${error.message}`
     )
     throw error;
@@ -301,4 +301,5 @@ export {
   getTeamMembers,
   getYamlData,
   isMatchingPattern
-}
+};
+
