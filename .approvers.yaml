@@ -3,4 +3,4 @@
     - user:patricklubach
 - regex: ^bugfix/
   approvers:
-    - user:racoon64
+    - user:racoon63
