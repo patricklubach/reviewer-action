@@ -16,6 +16,18 @@ async function run() {
     core.debug(`repo_name: ${repo_name}`)
     core.debug(`pr_number: ${pr_number}`)
 
+
+    // Get the data from config file
+    const filePath = core.getInput('approvers_file', { required: false })
+    const approverFile = utils.getYamlData(filePath)
+
+    // Set pull request title
+    const pullRequestTitle = pullRequest.title
+    core.debug(`Pull request title is "${pullRequestTitle}"`)
+
+    // Get the rule who matches the PR title
+    const rule = utils.getMatchingRule(pullRequestTitle, approverFile)
+
     // Get a list of all reviews of the PR
     const { data: reviews } = await utils.getReviews(
       octokit,
@@ -26,7 +38,6 @@ async function run() {
     core.debug(reviews)
     if(reviews.length == 0) {
       core.info('There are no reviews to check')
-      return
     } else {
       core.info(`There are ${reviews.length} reviews to check`)
     }
@@ -44,17 +55,6 @@ async function run() {
       repo_name,
       pr_number
     )
-
-    // Set pull request title
-    const pullRequestTitle = pullRequest.title
-    core.debug(`Pull request title is "${pullRequestTitle}"`)
-
-    // Get the data from config file
-    const filePath = core.getInput('approvers_file', { required: false })
-    const approverFile = utils.getYamlData(filePath)
-
-    // Get the rule who matches the PR title
-    const rule = utils.getMatchingRule(pullRequestTitle, approverFile)
 
     // Get the list of all desired approvers
     const desiredApprovers = utils.computeApprovers(
