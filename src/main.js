@@ -10,10 +10,10 @@ import * as utils from './utils.js'
 
 async function run() {
   try {
-    const org = core.getInput('org', { required: true })
+    const org = core.getInput('org', { required: false })
     const owner = core.getInput('owner', { required: true })
-    const pr_number = core.getInput('pr_number', { required: true })
     const repo = core.getInput('repo', { required: true })
+    const pr_number = core.getInput('pr_number', { required: true })
     const token = core.getInput('gh_token', { required: true })
     const octokit = github.getOctokit(token)
 
