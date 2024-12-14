@@ -21,6 +21,14 @@ async function run() {
     const filePath = core.getInput('approvers_file', { required: false })
     const approverFile = utils.getYamlData(filePath)
 
+    // Get the pull request
+    const { data: pullRequest } = await utils.getPullRequest(
+      octokit,
+      owner,
+      repo_name,
+      pr_number
+    )
+
     // Set pull request title
     const pullRequestTitle = pullRequest.title
     core.debug(`Pull request title is "${pullRequestTitle}"`)
@@ -47,14 +55,6 @@ async function run() {
 
     // Filter reviews by users who already reviewed and approved the PR
     const approvers = utils.getApprovers(approvedReviews)
-
-    // Get the pull request
-    const { data: pullRequest } = await utils.getPullRequest(
-      octokit,
-      owner,
-      repo_name,
-      pr_number
-    )
 
     // Get the list of all desired approvers
     const desiredApprovers = utils.computeApprovers(
