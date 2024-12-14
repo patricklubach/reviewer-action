@@ -8,7 +8,7 @@ import * as utils from './utils.js'
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 
-async function run() {
+function run() {
   try {
     const repo = process.env.GITHUB_REPOSITORY
     const repo_name = repo.split('/')[1]
@@ -23,10 +23,12 @@ async function run() {
     console.log(`pr_number: ${pr_number}`)
 
     // Get a list of all reviews of the PR
-    const reviews = utils.getReviews(octokit, owner, repo_name, pr_number)
+    const { data: reviews } = utils.getReviews(octokit, owner, repo_name, pr_number)
     if(reviews == 0) {
       core.info('There are no reviews to check')
       return
+    } else {
+      core.info(`There are ${reviews.length} reviews to check`)
     }
 
     // Filter reviews by status == 'APPROVED'
@@ -35,15 +37,15 @@ async function run() {
     // Create a list of all persons who already reviewed and approved the PR
     const reviewers = utils.getReviewers(approvedReviews)
 
-    // Get the title of the PR
-    const title = utils.getPRTitle(octokit, owner, repo_name, pr_number)
+    // Get the pull request
+    const { data: pullRequest } = utils.getPRTitle(octokit, owner, repo_name, pr_number)
 
     // Get the data from config file
     const filePath = core.getInput('approvers_file', { required: false })
     const data = utils.getYamlData(filePath)
 
     // Get the rule who matches the PR title
-    const rule = utils.getMatchingRule(title, data)
+    const rule = utils.getMatchingRule(pullRequest.title, data)
 
     // Get the list of all desired approvers
     const approvers = utils.computeApprovers(octokit, owner, rule['approvers'])
