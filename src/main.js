@@ -20,10 +20,10 @@ function run() {
     // Get a list of all reviews of the PR
     const { data: reviews } = utils.getReviews(octokit, owner, repo_name, pr_number)
     if(reviews == 0) {
-      octokit.core.info('There are no reviews to check');
+      console.log('There are no reviews to check');
       return ;
     } else {
-      octokit.core.info(`There are ${reviews.length} reviews to check`);
+      console.log(`There are ${reviews.length} reviews to check`);
     }
 
     // Filter reviews by status == 'APPROVED'
@@ -50,15 +50,14 @@ function run() {
 
     // If there are approvers left fail action, if not pass check
     if(!approversLeft.length > 0) {
-      octokit.core.error('Following approvers are missing:');
+      console.log('Following approvers are missing:');
       for(let i = 0; i < approversLeft.length; i++) {
-        octokit.core.info(approversLeft[i]);
+        console.log(approversLeft[i]);
       }
       throw new Error('Set rule is not fulfilled!');
     }
   } catch(error) {
     // Fail the workflow run if an error occurs
-    Octokit.core.setFailed(error);
     throw error;
   }
 }
