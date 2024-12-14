@@ -19,9 +19,11 @@ async function run() {
 
     // Get a list of all reviews of the PR
     const reviews = utils.getReviews(octokit, owner, repo, pr_number)
+    core.info(JSON.stringify(reviews))
 
     // Filter reviews by status == 'APPROVED'
     const approvedReviews = utils.getApprovals(reviews)
+    core.info(JSON.stringify(reviews))
 
     // Create a list of all persons who already reviewed and approved the PR
     const reviewers = utils.getReviewers(approvedReviews)
