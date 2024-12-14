@@ -5,7 +5,7 @@
 import fs from 'fs';
 import yaml from 'yaml';
 
-import Octokit from "octokit";
+import { Octokit } from "octokit";
 
 /**
  * Computes a list of approvers from a given list of approver strings.
