@@ -99,24 +99,27 @@ function getYamlData(filePath) {
 }
 
 function getMatchingRule(title, data) {
-  core.info(`Finding matching rule that matches pull request title ${title}`)
-  try {
-    for(const rule of data) {
-      // Check if the rule contains the key and the value matches the regex pattern
-      if(
-        Object.prototype.hasOwnProperty.call(rule, 'regex') &&
-        isMatchingPattern(title, rule['regex'])
-      ) {
-        core.info(`Rule with regex "${rule.regex}" matches title "${title}"`)
-        return rule // Return the first matching rule
-      }
+  core.info(`Trying to find rule that matches pull request title ${title}`)
+  for(const rule of data) {
+    // Check if the rule contains the key 'regex' and the value matches the regex pattern
+    if(
+      Object.prototype.hasOwnProperty.call(rule, 'regex') &&
+      isMatchingPattern(title, rule['regex'])
+    ) {
+      core.info(`Rule with regex "${rule.regex}" matches title "${title}"`)
+      return rule
     }
-    throw new Error(`No rule defined for title ${title}`)
-  } catch(error) {
-    core.error(`Cannot get matching rule. Details: ${error.message}`)
-    throw error
   }
+  core.warning("No rule matches pr title. Trying to fallback to default rule")
+  for(const rule of data) {
+    if (Object.prototype.hasOwnProperty.call(rule, 'default')) {
+      core.info('Default rule found.')
+      return rule
+    }
+  }
+  new Error('No matching rule found.')
 }
+
 
 function isMatchingPattern(title, pattern) {
   try {

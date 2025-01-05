@@ -33,7 +33,8 @@ async function run() {
     const pullRequestTitle = pullRequest.title
     core.debug(`Pull request title is "${pullRequestTitle}"`)
 
-    // Get the rule who matches the PR title
+    // Get the rule who matches the PR title.
+    // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
     const rule = utils.getMatchingRule(pullRequestTitle, approverFile)
 
     // Get a list of all reviews of the PR
