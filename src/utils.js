@@ -175,9 +175,9 @@ function getApproversLeft(desiredApprovers, approvers) {
     return
   } else {
     const approversLeft = []
-    approvers.forEach(approver => {
-      if(desiredApprovers.includes(approver)) {
-        approversLeft.push(approver)
+    desiredApprovers.forEach(desiredApprover => {
+      if(!approvers.includes(desiredApprover)) {
+        approversLeft.push(desiredApprover)
       }
     });
     throw new Error(`Check was not successful. There are still approvals needed from: ${approversLeft}`)
