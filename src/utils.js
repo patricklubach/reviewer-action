@@ -174,22 +174,15 @@ function computeApprovers(client, org, approvers) {
 
 function getApproversLeft(desiredApprovers, approvers) {
   core.info('Checking if approvals are still needed')
-  try {
     core.debug(`Users which approved yet: ${approvers.sort()}`)
     core.debug(`Users which need to approve: ${desiredApprovers.sort()}`)
 
     if(JSON.stringify(desiredApprovers) === JSON.stringify(approvers)) {
-      core.debug(`Successfully checked`)
+      core.debug(`Check successful`)
       return
     } else {
-      throw new Error('There are still approvals needed.')
+      throw new Error('Check is not fulfilled. There are still approvals needed.')
     }
-  } catch(error) {
-    core.error(
-      `Check is not fulfilled. Details: ${error.message}`
-    )
-    throw error
-  }
 }
 
 async function getTeamMembers(client, org, teamSlug) {
