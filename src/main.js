@@ -44,9 +44,10 @@ async function run() {
       repo_name,
       pr_number
     )
-    core.debug(reviews)
-    if(reviews.length == 0) {
-      core.info('There are no reviews to check')
+    core.debug(`Reviews: ${reviews.length === 0 ? '[]' : reviews}`)
+
+    if(rule['approvers'].length > reviews.length) {
+      new Error(`There are still reviews required.`)
     } else {
       core.info(`There are ${reviews.length} reviews to check`)
     }
