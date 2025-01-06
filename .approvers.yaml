@@ -1,6 +1,8 @@
 - regex: ^feature/
+  count: 1
   approvers:
     - user:patricklubach
+    - user:racoon63
 - regex: ^bugfix/
   approvers:
     - user:racoon63
