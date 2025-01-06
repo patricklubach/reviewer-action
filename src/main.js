@@ -36,7 +36,8 @@ async function run() {
     // Get the rule who matches the PR title.
     // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
     const rule = utils.getMatchingRule(pullRequestTitle, approverFile)
-    const approvalsNeededCount = rule.has('count') ? rule['count'] : 0
+    core.debug(typeof rule)
+    const approvalsNeededCount = rule.hasOwnProperty('count') ? rule['count'] : 0
 
     // Get a list of all reviews of the PR
     const { data: reviews } = await utils.getReviews(

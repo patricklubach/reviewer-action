@@ -168,7 +168,8 @@ function computeApprovers(client, org, approvers) {
 function getApproversLeft(desiredApprovers, approvers, approvalsNeededCount) {
   core.info('Checking if approvals are still needed')
   core.debug(`Users which approved yet: ${approvers.sort()}`)
-  core.debug(`Users which need to approve: ${desiredApprovers.sort()}`)
+  core.debug(`Users which are desired to approve: ${desiredApprovers.sort()}`)
+  core.debug(`How many approvals are needed?: ${approvalsNeededCount > 0 ? approvalsNeededCount : 'ALL'}`)
 
   const approversLeft = []
   const approversVerified = []
