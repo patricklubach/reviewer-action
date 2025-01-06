@@ -1,12 +1,6 @@
 name: Continuous Integration
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
   pull_request_review:
     types: [submitted]
 
@@ -33,4 +27,4 @@ jobs:
         with:
           approvers_file: .approvers.yaml
           token: ${{ secrets.GITHUB_TOKEN }}
-          pr_number: ${{ github.event.number }}
+          pr_number: ${{ github.event.pull_request.number }}
