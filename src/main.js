@@ -33,7 +33,8 @@ async function run() {
     const pullRequestTitle = pullRequest.title
     core.debug(`Pull request title is "${pullRequestTitle}"`)
 
-    // Get the rule who matches the PR title
+    // Get the rule who matches the PR title.
+    // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
     const rule = utils.getMatchingRule(pullRequestTitle, approverFile)
 
     // Get a list of all reviews of the PR
@@ -43,9 +44,10 @@ async function run() {
       repo_name,
       pr_number
     )
-    core.debug(reviews)
-    if(reviews.length == 0) {
-      core.info('There are no reviews to check')
+    core.debug(`Reviews: ${reviews.length === 0 ? '[]' : reviews}`)
+
+    if(rule['approvers'].length > reviews.length) {
+      throw new Error(`There are still reviews required.`)
     } else {
       core.info(`There are ${reviews.length} reviews to check`)
     }

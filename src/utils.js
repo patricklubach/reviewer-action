@@ -8,7 +8,7 @@ import YAML from 'yaml'
 import * as core from '@actions/core'
 
 function getReviews(client, owner, repo, pr_number) {
-  core.info(`Get reviews of pull request #${pr_number}`)
+  core.info(`Getting reviews of pull request #${pr_number}`)
   try {
     const url = `/repos/${owner}/${repo}/pulls/${pr_number}/reviews`
     core.debug(`Fetching reviews from endpoint: ${url}`)
@@ -21,10 +21,9 @@ function getReviews(client, owner, repo, pr_number) {
       }
     })
   } catch(error) {
-    core.error(
+    throw new Error(
       `The reviews could not be retrieved from GitHub. Details: ${error.message}`
     )
-    throw error
   }
 }
 
@@ -43,8 +42,7 @@ function getApprovals(reviews) {
     }
     return approvals
   } catch(error) {
-    core.error(`Cannot filter reviews for approvals. Details: ${error.message}`)
-    throw error
+    throw new Error(`Cannot filter reviews for approvals. Details: ${error.message}`)
   }
 }
 
@@ -55,15 +53,14 @@ function getApprovers(reviews) {
     for(const review of reviews) {
       if(review.state == 'APPROVED') {
         reviewers.push([
-          "user",
-          review.user.login].join(":"))
+          'user',
+          review.user.login].join(':'))
       }
     }
     core.info(`Following user reviewed and approved yet: ${reviewers}`)
     return reviewers
   } catch(error) {
-    core.error(`Cannot get reviewers. Details: ${error.message}`)
-    throw error
+    throw new Error(`Cannot get reviewers. Details: ${error.message}`)
   }
 }
 
@@ -81,10 +78,9 @@ function getPullRequest(client, owner, repo, pr_number) {
       }
     })
   } catch(error) {
-    core.error(
+    throw new Error(
       `The pull request could not be retrieved. Details: ${error.message}`
     )
-    throw error
   }
 }
 
@@ -93,30 +89,32 @@ function getYamlData(filePath) {
   try {
     return YAML.parse(fs.readFileSync(filePath, 'utf8'))
   } catch(error) {
-    core.error(`Cannot get data from approvers file. Details: ${error.message}`)
-    throw error
+    throw new Error(`Cannot get data from approvers file. Details: ${error.message}`)
   }
 }
 
 function getMatchingRule(title, data) {
-  core.info(`Finding matching rule that matches pull request title ${title}`)
-  try {
-    for(const rule of data) {
-      // Check if the rule contains the key and the value matches the regex pattern
-      if(
-        Object.prototype.hasOwnProperty.call(rule, 'regex') &&
-        isMatchingPattern(title, rule['regex'])
-      ) {
-        core.info(`Rule with regex "${rule.regex}" matches title "${title}"`)
-        return rule // Return the first matching rule
-      }
+  core.info(`Trying to find rule that matches pull request title "${title}"`)
+  for(const rule of data) {
+    // Check if the rule contains the key 'regex' and the value matches the regex pattern
+    if(
+      Object.prototype.hasOwnProperty.call(rule, 'regex') &&
+      isMatchingPattern(title, rule['regex'])
+    ) {
+      core.info(`Rule with regex "${rule.regex}" matches title "${title}"`)
+      return rule
     }
-    throw new Error(`No rule defined for title ${title}`)
-  } catch(error) {
-    core.error(`Cannot get matching rule. Details: ${error.message}`)
-    throw error
   }
+  core.warning('No rule matches PR title. Trying to fallback to default rule')
+  for(const rule of data) {
+    if(Object.prototype.hasOwnProperty.call(rule, 'default')) {
+      core.info('Default rule found.')
+      return rule
+    }
+  }
+  throw new Error('No matching rule found.')
 }
+
 
 function isMatchingPattern(title, pattern) {
   try {
@@ -125,12 +123,11 @@ function isMatchingPattern(title, pattern) {
 
     // Test the string against the regex pattern
     const result = regex.test(title)
-    core.debug(`Title ${title} match regex ${pattern} => ${result}`)
+    core.debug(`Title "${title}" match regex ${pattern} => ${result}`)
     return result
   } catch(error) {
     // If there is an error (e.g., invalid regex), log the error and return false
-    core.error(`Invalid regex pattern. Details: ${error.message}`)
-    throw error
+    throw new Error(`Invalid regex pattern. Details: ${error.message}`)
   }
 }
 
@@ -164,28 +161,26 @@ function computeApprovers(client, org, approvers) {
     core.debug(`List of expanded approvers: ${expandedApprovers}`)
     return [...new Set(expandedApprovers)]
   } catch(error) {
-    core.error(`Cannot compute approvers list. Details: ${error.message}`)
-    throw error
+    throw new Error(`Cannot compute approvers list. Details: ${error.message}`)
   }
 }
 
 function getApproversLeft(desiredApprovers, approvers) {
   core.info('Checking if approvals are still needed')
-  try {
-    core.debug(`Users which approved yet: ${approvers.sort()}`)
-    core.debug(`Users which need to approve: ${desiredApprovers.sort()}`)
+  core.debug(`Users which approved yet: ${approvers.sort()}`)
+  core.debug(`Users which need to approve: ${desiredApprovers.sort()}`)
 
-    if(JSON.stringify(desiredApprovers) === JSON.stringify(approvers)) {
-      core.debug(`Successfully checked`)
-      return
-    } else {
-      throw new Error('There are still approvals needed.')
-    }
-  } catch(error) {
-    core.error(
-      `Check is not fulfilled. Details: ${error.message}`
-    )
-    throw error
+  if(JSON.stringify(desiredApprovers) === JSON.stringify(approvers)) {
+    core.debug(`Check was successful`)
+    return
+  } else {
+    const approversLeft = []
+    desiredApprovers.forEach(desiredApprover => {
+      if(!approvers.includes(desiredApprover)) {
+        approversLeft.push(desiredApprover)
+      }
+    });
+    throw new Error(`Check was not successful. There are still approvals needed from: ${approversLeft}`)
   }
 }
 
@@ -200,10 +195,9 @@ async function getTeamMembers(client, org, teamSlug) {
       }
     })
   } catch(error) {
-    core.error(
+    throw new Error(
       `The team members of team ${teamSlug} could not be retrieved from GitHub. More information: ${error.message}`
     )
-    throw error
   }
 }
 
