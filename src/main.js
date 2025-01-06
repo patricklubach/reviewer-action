@@ -47,7 +47,7 @@ async function run() {
     core.debug(`Reviews: ${reviews.length === 0 ? '[]' : reviews}`)
 
     if(rule['approvers'].length > reviews.length) {
-      new Error(`There are still reviews required.`)
+      throw new Error(`There are still reviews required.`)
     } else {
       core.info(`There are ${reviews.length} reviews to check`)
     }

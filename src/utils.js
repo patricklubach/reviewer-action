@@ -21,7 +21,7 @@ function getReviews(client, owner, repo, pr_number) {
       }
     })
   } catch(error) {
-    new Error(
+    throw new Error(
       `The reviews could not be retrieved from GitHub. Details: ${error.message}`
     )
   }
@@ -42,7 +42,7 @@ function getApprovals(reviews) {
     }
     return approvals
   } catch(error) {
-    new Error(`Cannot filter reviews for approvals. Details: ${error.message}`)
+    throw new Error(`Cannot filter reviews for approvals. Details: ${error.message}`)
   }
 }
 
@@ -60,7 +60,7 @@ function getApprovers(reviews) {
     core.info(`Following user reviewed and approved yet: ${reviewers}`)
     return reviewers
   } catch(error) {
-    new Error(`Cannot get reviewers. Details: ${error.message}`)
+    throw new Error(`Cannot get reviewers. Details: ${error.message}`)
   }
 }
 
@@ -78,7 +78,7 @@ function getPullRequest(client, owner, repo, pr_number) {
       }
     })
   } catch(error) {
-    new Error(
+    throw new Error(
       `The pull request could not be retrieved. Details: ${error.message}`
     )
   }
@@ -89,7 +89,7 @@ function getYamlData(filePath) {
   try {
     return YAML.parse(fs.readFileSync(filePath, 'utf8'))
   } catch(error) {
-    new Error(`Cannot get data from approvers file. Details: ${error.message}`)
+    throw new Error(`Cannot get data from approvers file. Details: ${error.message}`)
   }
 }
 
@@ -112,7 +112,7 @@ function getMatchingRule(title, data) {
       return rule
     }
   }
-  new Error('No matching rule found.')
+  throw new Error('No matching rule found.')
 }
 
 
@@ -127,7 +127,7 @@ function isMatchingPattern(title, pattern) {
     return result
   } catch(error) {
     // If there is an error (e.g., invalid regex), log the error and return false
-    new Error(`Invalid regex pattern. Details: ${error.message}`)
+    throw new Error(`Invalid regex pattern. Details: ${error.message}`)
   }
 }
 
@@ -161,7 +161,7 @@ function computeApprovers(client, org, approvers) {
     core.debug(`List of expanded approvers: ${expandedApprovers}`)
     return [...new Set(expandedApprovers)]
   } catch(error) {
-    new Error(`Cannot compute approvers list. Details: ${error.message}`)
+    throw new Error(`Cannot compute approvers list. Details: ${error.message}`)
   }
 }
 
@@ -195,7 +195,7 @@ async function getTeamMembers(client, org, teamSlug) {
       }
     })
   } catch(error) {
-    new Error(
+    throw new Error(
       `The team members of team ${teamSlug} could not be retrieved from GitHub. More information: ${error.message}`
     )
   }
