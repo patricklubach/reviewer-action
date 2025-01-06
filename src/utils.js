@@ -165,22 +165,30 @@ function computeApprovers(client, org, approvers) {
   }
 }
 
-function getApproversLeft(desiredApprovers, approvers) {
+function getApproversLeft(desiredApprovers, approvers, approvalsNeededCount) {
   core.info('Checking if approvals are still needed')
   core.debug(`Users which approved yet: ${approvers.sort()}`)
-  core.debug(`Users which need to approve: ${desiredApprovers.sort()}`)
+  core.debug(`Users which are desired to approve: ${desiredApprovers.sort()}`)
+  core.debug(`How many approvals are needed?: ${approvalsNeededCount > 0 ? approvalsNeededCount : 'ALL'}`)
 
-  if(JSON.stringify(desiredApprovers) === JSON.stringify(approvers)) {
+  const approversLeft = []
+  const approversVerified = []
+
+  desiredApprovers.forEach(desiredApprover => {
+    if(!approvers.includes(desiredApprover)) {
+      approversLeft.push(desiredApprover)
+    } else {
+      approversVerified.push(desiredApprover)
+    }
+  })
+
+  if(approvalsNeededCount === 0 && approversLeft > 0) {
+    throw new Error(`There are still approvals required from: ${approversLeft}`)
+  }
+
+  if(approvalsNeededCount > 0 && approversVerified > approvalsNeededCount) {
     core.debug(`Check was successful`)
     return
-  } else {
-    const approversLeft = []
-    desiredApprovers.forEach(desiredApprover => {
-      if(!approvers.includes(desiredApprover)) {
-        approversLeft.push(desiredApprover)
-      }
-    });
-    throw new Error(`Check was not successful. There are still approvals needed from: ${approversLeft}`)
   }
 }
 

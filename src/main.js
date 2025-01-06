@@ -36,6 +36,8 @@ async function run() {
     // Get the rule who matches the PR title.
     // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
     const rule = utils.getMatchingRule(pullRequestTitle, approverFile)
+    core.debug(typeof rule)
+    const approvalsNeededCount = rule.hasOwnProperty('count') ? rule['count'] : 0
 
     // Get a list of all reviews of the PR
     const { data: reviews } = await utils.getReviews(
@@ -55,10 +57,10 @@ async function run() {
     // Filter reviews by status == 'APPROVED'
     const approvedReviews = utils.getApprovals(reviews)
 
-    // Filter reviews by users who already reviewed and approved the PR
+    // Get list of usernames which already approved the PR
     const approvers = utils.getApprovers(approvedReviews)
 
-    // Get the list of all desired approvers
+    // Get the list of all desired approvers. Teams are gonna be resolved
     const desiredApprovers = utils.computeApprovers(
       octokit,
       owner,
@@ -66,8 +68,8 @@ async function run() {
     )
 
     // Check if all desired approvers approved PR
-    utils.getApproversLeft(desiredApprovers, approvers)
-    core.debug(`Rule is fulfilled`)
+    utils.getApproversLeft(desiredApprovers, approvers, approvalsNeededCount)
+    core.info(`Rule is fulfilled`)
   } catch(error) {
     // Fail the workflow run if an error occurs
     core.setFailed(`Approver Action failed! Details: ${error.message}`)

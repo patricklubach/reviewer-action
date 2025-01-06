@@ -1,9 +1,11 @@
 - regex: ^feature/
+  count: 1
   approvers:
     - user:patricklubach
-- regex: ^bugfix/
-  approvers:
     - user:racoon63
+- regex: "^build(deps|deps-dev):*"
+  approvers:
+    - user:patricklubach
 - default: true
   approvers:
-    - user:racoon63
+    - user:patricklubach
