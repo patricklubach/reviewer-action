@@ -1,4 +1,5 @@
 check_on: branch_name
+set_approvers: true
 
 rules:
   - regex: ^feature/
