@@ -1,12 +1,14 @@
-- check_on: branch
-  regex: ^feature/
-  count: 1
-  approvers:
-    - user:patricklubach
-    - user:racoon63
-- regex: "^build(deps|deps-dev):*"
-  approvers:
-    - user:patricklubach
-- default: true
-  approvers:
-    - user:patricklubach
+check_on: branch_name
+
+rules:
+  - regex: ^feature/
+    count: 1
+    approvers:
+      - user:patricklubach
+      - user:racoon63
+  - regex: "^build(deps|deps-dev):*"
+    approvers:
+      - user:patricklubach
+  - default: true
+    approvers:
+      - user:patricklubach

@@ -21,6 +21,12 @@ async function run() {
     const filePath = core.getInput('approvers_file', { required: false })
     const approverFile = utils.getYamlData(filePath)
 
+    if(approverFile.hasOwnProperty('check_on') && !['title', 'branch_name'].includes(approverFile.check_on)) {
+      throw new Error(`check_on property is misconfigured. Allowed values are: [title, branch_name]. Got: ${approverFile.check_on}`)
+    }
+
+
+
     // Get the pull request
     const { data: pullRequest } = await utils.getPullRequest(
       octokit,
@@ -29,13 +35,22 @@ async function run() {
       pr_number
     )
 
-    // Set pull request title
-    const pullRequestTitle = pullRequest.title
-    core.debug(`Pull request title is "${pullRequestTitle}"`)
+    // Determines on what to check. Either title or branch name
+    const checkOn = 'branch_name'
+
+    if(approverFile.hasOwnProperty('check_on') && approverFile.check_on === 'title') {
+      checkOn = pullRequest.title
+      core.debug(`Action will check on "${checkOn}"`)
+    }
+
+    if(approverFile.hasOwnProperty('check_on') && approverFile.check_on === 'branch_name') {
+      checkOn = pullRequest.head.ref
+      core.debug(`Action will check on "${checkOn}"`)
+    }
 
     // Get the rule who matches the PR title.
     // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
-    const rule = utils.getMatchingRule(pullRequestTitle, approverFile)
+    const rule = utils.getMatchingRule(checkOn, approverFile.rules)
     core.debug(typeof rule)
     const approvalsNeededCount = rule.hasOwnProperty('count') ? rule['count'] : 0
 
