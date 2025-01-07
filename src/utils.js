@@ -132,15 +132,39 @@ function isMatchingPattern(checkOn, pattern) {
   }
 }
 
-function setApprovers(client, owner, repo, pr_number) {
+function setApprovers(client, owner, repo, pr_number, allReviewers) {
   core.info(`Setting approvers for pull request #${pr_number}`)
   try {
-    const url = `/repos/${owner}/${repo}/pulls/${pr_number}`
-    core.debug(`Fetching reviews from endpoint: ${url}`)
-    return client.request(`PATCH ${url}`, {
+    const url = `/repos/${owner}/${repo}/pulls/${pr_number}/requested_reviewers`
+    core.debug(`Setting reviewers on endpoint: ${url}`)
+    const reviewers = []
+    const teamReviewers = []
+
+    allReviewers.forEach(reviewer => {
+      let [type, principle] = reviewer.split(':')
+
+      switch(type) {
+        case 'user': {
+          reviewers.push(reviewer)
+          break
+        }
+        case 'team': {
+          teamReviewers.push(reviewer)
+          break
+        }
+        default: {
+          throw new Error(
+            `The ${type} "${principle}" cannot be verified because it is not of type "user" or "team"!`
+          )
+        }
+      }
+    })
+    return client.request(`POST ${url}`, {
       owner: owner,
       repo: repo,
       pull_number: pr_number,
+      reviewers: reviewers,
+      team_reviewers: teamReviewers,
       headers: {
         'X-GitHub-Api-Version': '2022-11-28'
       }

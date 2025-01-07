@@ -25,7 +25,7 @@ jobs:
         id: npm-ci
         run: npm ci
 
-      - name: Check approvals
+      - name: Set Approvers
         id: set-approvals
         uses: ./
         with:
