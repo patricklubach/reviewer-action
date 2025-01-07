@@ -182,14 +182,15 @@ function getApproversLeft(desiredApprovers, approvers, approvalsNeededCount) {
     }
   })
 
-  if(approvalsNeededCount === 0 && approversLeft > 0) {
+  if(approvalsNeededCount == 0 && approversLeft.length > 0) {
     throw new Error(`There are still approvals required from: ${approversLeft}`)
   }
 
-  if(approvalsNeededCount > 0 && approversVerified > approvalsNeededCount) {
-    core.debug(`Check was successful`)
-    return
+  if(approvalsNeededCount > 0 && approversVerified < approvalsNeededCount) {
+    throw new Error(`There are still approvals required!`)
   }
+
+  core.debug(`Check was successful`)
 }
 
 async function getTeamMembers(client, org, teamSlug) {
