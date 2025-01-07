@@ -1,3 +1,5 @@
+check_on: branch_name
+
 rules:
   - regex: ^feature/
     count: 1

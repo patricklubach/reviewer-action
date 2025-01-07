@@ -11,21 +11,16 @@ async function run() {
     const repo = process.env.GITHUB_REPOSITORY
     const [owner, repo_name] = repo.split('/')
 
+    // Inputs debugs outputs
+    core.debug('Inputs:')
     core.debug(`repo: ${repo}`)
     core.debug(`owner: ${owner}`)
     core.debug(`repo_name: ${repo_name}`)
     core.debug(`pr_number: ${pr_number}`)
 
-
     // Get the data from config file
     const filePath = core.getInput('approvers_file', { required: false })
     const approverFile = utils.getYamlData(filePath)
-
-    if(approverFile.hasOwnProperty('check_on') && !['title', 'branch_name'].includes(approverFile.check_on)) {
-      throw new Error(`check_on property is misconfigured. Allowed values are: [title, branch_name]. Got: ${approverFile.check_on}`)
-    }
-
-
 
     // Get the pull request
     const { data: pullRequest } = await utils.getPullRequest(
@@ -35,18 +30,24 @@ async function run() {
       pr_number
     )
 
-    // Determines on what to check. Either title or branch name
-    const checkOnType = approverFile.hasOwnProperty('check_on') ? approverFile.check_on : 'branch_name'
-    let checkOn
+    var checkOn = 'branch_name'
 
-    if(approverFile.hasOwnProperty('check_on') && checkOnType === 'title') {
-      checkOn = pullRequest.title
-      core.debug(`Action will check on title: "${checkOn}"`)
+    // Determines on what to check. Either title or branch name
+    if(approverFile.hasOwnProperty('check_on')) {
+      checkOn = approverFile.check_on
     }
 
-    if(approverFile.hasOwnProperty('check_on') && checkOnType === 'branch_name') {
-      checkOn = pullRequest.head.ref
-      core.debug(`Action will check on branch: "${checkOn}"`)
+    switch(checkOn) {
+      case 'title':
+        checkOn = pullRequest.title
+        core.debug(`Action will check on title: "${checkOn}"`)
+        break;
+      case 'branch_name':
+        checkOn = pullRequest.head.ref
+        core.debug(`Action will check on branch: "${checkOn}"`)
+        break;
+      default:
+        throw new Error(`check_on property is misconfigured. Allowed values are: [title, branch_name]. Got: ${approverFile.check_on}`)
     }
 
     // Get the rule who matches the PR title.
