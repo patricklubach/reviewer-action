@@ -36,22 +36,21 @@ async function run() {
     )
 
     // Determines on what to check. Either title or branch name
-    const checkOn = 'branch_name'
+    let checkOn = 'branch_name'
 
     if(approverFile.hasOwnProperty('check_on') && approverFile.check_on === 'title') {
       checkOn = pullRequest.title
-      core.debug(`Action will check on "${checkOn}"`)
+      core.debug(`Action will check on title: "${checkOn}"`)
     }
 
     if(approverFile.hasOwnProperty('check_on') && approverFile.check_on === 'branch_name') {
       checkOn = pullRequest.head.ref
-      core.debug(`Action will check on "${checkOn}"`)
+      core.debug(`Action will check on branch: "${checkOn}"`)
     }
 
     // Get the rule who matches the PR title.
     // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
     const rule = utils.getMatchingRule(checkOn, approverFile.rules)
-    core.debug(typeof rule)
     const approvalsNeededCount = rule.hasOwnProperty('count') ? rule['count'] : 0
 
     // Get a list of all reviews of the PR
@@ -61,7 +60,6 @@ async function run() {
       repo_name,
       pr_number
     )
-    core.debug(`Reviews: ${reviews.length === 0 ? '[]' : reviews}`)
 
     if(rule['approvers'].length > reviews.length) {
       throw new Error(`There are still reviews required.`)

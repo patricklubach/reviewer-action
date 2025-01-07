@@ -1,4 +1,4 @@
-check_on: branch_name
+check_on: title
 
 rules:
   - regex: ^feature/
