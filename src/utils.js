@@ -93,19 +93,19 @@ function getYamlData(filePath) {
   }
 }
 
-function getMatchingRule(title, data) {
-  core.info(`Trying to find rule that matches pull request title "${title}"`)
+function getMatchingRule(checkOn, data) {
+  core.info(`Trying to find rule that matches "${checkOn}"`)
   for(const rule of data) {
     // Check if the rule contains the key 'regex' and the value matches the regex pattern
     if(
       Object.prototype.hasOwnProperty.call(rule, 'regex') &&
-      isMatchingPattern(title, rule['regex'])
+      isMatchingPattern(checkOn, rule['regex'])
     ) {
-      core.info(`Rule with regex "${rule.regex}" matches title "${title}"`)
+      core.info(`Rule with regex "${rule.regex}" matches "${checkOn}"`)
       return rule
     }
   }
-  core.warning('No rule matches PR title. Trying to fallback to default rule')
+  core.warning(`No rule regex matches "${checkOn}". Trying to fallback to default rule`)
   for(const rule of data) {
     if(Object.prototype.hasOwnProperty.call(rule, 'default')) {
       core.info('Default rule found.')
@@ -116,14 +116,14 @@ function getMatchingRule(title, data) {
 }
 
 
-function isMatchingPattern(title, pattern) {
+function isMatchingPattern(checkOn, pattern) {
   try {
     // Ensure the pattern is a RegExp object if it's provided as a string
     const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern
 
     // Test the string against the regex pattern
-    const result = regex.test(title)
-    core.debug(`Title "${title}" match regex ${pattern} => ${result}`)
+    const result = regex.test(checkOn)
+    core.debug(`Check that "${checkOn}" matches regex ${pattern} => ${result}`)
     return result
   } catch(error) {
     // If there is an error (e.g., invalid regex), log the error and return false

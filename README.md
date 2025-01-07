@@ -15,11 +15,11 @@ of the file is as follows:
 
 ```yaml
 - regex: ^feature/
-  approver:
+  approvers:
     - team:MyApproverGroup
     - user:RobotUser9
 - regex: ^bugfix/
-  approver:
+  approvers:
     - user:Foo
 ```
 
@@ -69,8 +69,9 @@ jobs:
 In the following there is a minimal example of the `.approvers.yaml` file. If no other option is being used then every listed approver needs to approve the PR to fulfill the requirement. If a team is defined then each member of the team needs to approve the PR.
 
 ```yaml
+rules:
 - regex: ^feature/
-  approver:
+  approvers:
     - team:MyApproverGroup
     - user:RobotUser9
 ```
@@ -78,9 +79,10 @@ In the following there is a minimal example of the `.approvers.yaml` file. If no
 You can limit how many approvers need to approve the pull request by setting the `count` keyword:
 
 ```yaml
+rules:
 - regex: ^feature/
   count: 1
-  approver:
+  approvers:
     - team:MyApproverGroup
     - user:RobotUser9
 ```
@@ -88,28 +90,48 @@ You can limit how many approvers need to approve the pull request by setting the
 You can have different rules for defined regex pattern like below:
 
 ```yaml
+rules:
 - regex: ^feature/
-  approver:
+  approvers:
     - team:MyApproverGroup
     - user:RobotUser9
 - regex: ^bugfix/
-  approver:
+  approvers:
     - user:Foo
 ```
 
 You can also define a default rule which is identified by the default keyword. If you have multiple default rules defined the first which is found is being returned and is applied to the PR:
 
 ```yaml
+rules:
 - regex: ^feature/
-  approver:
+  approvers:
     - team:MyApproverGroup
     - user:RobotUser9
 - regex: ^bugfix/
-  approver:
+  approvers:
     - user:Foo
 - default: true
-  approver:
+  approvers:
     - user:Foo
+```
+
+In default configuration the approver action is checking on the branch of the pull request. You can configure that behaviour by setting the `check_on` configuration on a per rule base:
+
+```yaml
+check_on: branch
+
+rules:
+  - regex: ^feature/
+    approvers:
+      - team:MyApproverGroup
+      - user:RobotUser9
+  - regex: ^bugfix/
+    approvers:
+      - user:Foo
+  - default: true
+    approvers:
+      - user:Foo
 ```
 
 ## Test locally

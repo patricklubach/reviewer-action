@@ -1,6 +1,6 @@
 {
   "action": "opened",
-  "number": 40,
+  "number": 42,
   "pull_request": {
     "head": {
       "ref": "cleanup"
@@ -8,6 +8,6 @@
     "base": {
       "ref": "main"
     },
-    "number": 40
+    "number": 42
   }
 }

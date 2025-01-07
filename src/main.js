@@ -11,11 +11,12 @@ async function run() {
     const repo = process.env.GITHUB_REPOSITORY
     const [owner, repo_name] = repo.split('/')
 
+    // Inputs debugs outputs
+    core.debug('Inputs:')
     core.debug(`repo: ${repo}`)
     core.debug(`owner: ${owner}`)
     core.debug(`repo_name: ${repo_name}`)
     core.debug(`pr_number: ${pr_number}`)
-
 
     // Get the data from config file
     const filePath = core.getInput('approvers_file', { required: false })
@@ -29,14 +30,29 @@ async function run() {
       pr_number
     )
 
-    // Set pull request title
-    const pullRequestTitle = pullRequest.title
-    core.debug(`Pull request title is "${pullRequestTitle}"`)
+    var checkOn = 'branch_name'
+
+    // Determines on what to check. Either title or branch name
+    if(approverFile.hasOwnProperty('check_on')) {
+      checkOn = approverFile.check_on
+    }
+
+    switch(checkOn) {
+      case 'title':
+        checkOn = pullRequest.title
+        core.debug(`Action will check on title: "${checkOn}"`)
+        break;
+      case 'branch_name':
+        checkOn = pullRequest.head.ref
+        core.debug(`Action will check on branch: "${checkOn}"`)
+        break;
+      default:
+        throw new Error(`check_on property is misconfigured. Allowed values are: [title, branch_name]. Got: ${approverFile.check_on}`)
+    }
 
     // Get the rule who matches the PR title.
     // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
-    const rule = utils.getMatchingRule(pullRequestTitle, approverFile)
-    core.debug(typeof rule)
+    const rule = utils.getMatchingRule(checkOn, approverFile.rules)
     const approvalsNeededCount = rule.hasOwnProperty('count') ? rule['count'] : 0
 
     // Get a list of all reviews of the PR
@@ -46,7 +62,6 @@ async function run() {
       repo_name,
       pr_number
     )
-    core.debug(`Reviews: ${reviews.length === 0 ? '[]' : reviews}`)
 
     if(rule['approvers'].length > reviews.length) {
       throw new Error(`There are still reviews required.`)
