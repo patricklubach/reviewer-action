@@ -4,7 +4,7 @@ on:
   pull_request_review:
     types: [dismissed, submitted]
   pull_request:
-    types: [opened]
+    types: [opened, reopened]
 
 permissions:
   contents: read
@@ -13,7 +13,7 @@ jobs:
   set_approvers:
     name: Set approvers
     runs-on: ubuntu-latest
-    if: github.event.pull_request.action == 'opened'
+    if: github.event.pull_request
 
     steps:
       - name: Checkout
@@ -35,7 +35,7 @@ jobs:
   check_approvals:
     name: Approvals Check
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request_review.action == 'submitted' || github.event.pull_request_review.action == 'dismissed' }}
+    if: github.event.pull_request_review
 
     steps:
       - name: Checkout
