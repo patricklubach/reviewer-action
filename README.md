@@ -15,11 +15,11 @@ of the file is as follows:
 
 ```yaml
 - regex: ^feature/
-  approver:
+  approvers:
     - team:MyApproverGroup
     - user:RobotUser9
 - regex: ^bugfix/
-  approver:
+  approvers:
     - user:Foo
 ```
 
@@ -70,7 +70,7 @@ In the following there is a minimal example of the `.approvers.yaml` file. If no
 
 ```yaml
 - regex: ^feature/
-  approver:
+  approvers:
     - team:MyApproverGroup
     - user:RobotUser9
 ```
@@ -80,7 +80,7 @@ You can limit how many approvers need to approve the pull request by setting the
 ```yaml
 - regex: ^feature/
   count: 1
-  approver:
+  approvers:
     - team:MyApproverGroup
     - user:RobotUser9
 ```
@@ -89,11 +89,11 @@ You can have different rules for defined regex pattern like below:
 
 ```yaml
 - regex: ^feature/
-  approver:
+  approvers:
     - team:MyApproverGroup
     - user:RobotUser9
 - regex: ^bugfix/
-  approver:
+  approvers:
     - user:Foo
 ```
 
@@ -101,14 +101,31 @@ You can also define a default rule which is identified by the default keyword. I
 
 ```yaml
 - regex: ^feature/
-  approver:
+  approvers:
     - team:MyApproverGroup
     - user:RobotUser9
 - regex: ^bugfix/
-  approver:
+  approvers:
     - user:Foo
 - default: true
-  approver:
+  approvers:
+    - user:Foo
+```
+
+In default configuration the approver action is checking on the branch of the pull request. You can configure that behaviour by setting the `check_on` configuration on a per rule base:
+
+```yaml
+- check_on: title
+  regex: ^feature/
+  approvers:
+    - team:MyApproverGroup
+    - user:RobotUser9
+- check_on: branch
+  regex: ^bugfix/
+  approvers:
+    - user:Foo
+- default: true
+  approvers:
     - user:Foo
 ```
 
