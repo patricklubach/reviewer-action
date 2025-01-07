@@ -14,13 +14,16 @@ This action checks if all approvals of a PR match given rules.
 of the file is as follows:
 
 ```yaml
-- regex: ^feature/
-  approvers:
-    - team:MyApproverGroup
-    - user:RobotUser9
-- regex: ^bugfix/
-  approvers:
-    - user:Foo
+check_on: title
+
+rules:
+  - regex: ^feature/
+    approvers:
+      - team:MyApproverGroup
+      - user:RobotUser9
+  - regex: ^bugfix/
+    approvers:
+      - user:Foo
 ```
 
 **Default**: `.approvers.yaml`
