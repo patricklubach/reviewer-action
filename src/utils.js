@@ -7,6 +7,7 @@ import YAML from 'yaml'
 
 import * as core from '@actions/core'
 
+
 function getReviews(client, owner, repo, pr_number) {
   core.info(`Getting reviews of pull request #${pr_number}`)
   try {
@@ -131,6 +132,26 @@ function isMatchingPattern(checkOn, pattern) {
   }
 }
 
+function setApprovers(client, owner, repo, pr_number) {
+  core.info(`Setting approvers for pull request #${pr_number}`)
+  try {
+    const url = `/repos/${owner}/${repo}/pulls/${pr_number}`
+    core.debug(`Fetching reviews from endpoint: ${url}`)
+    return client.request(`PATCH ${url}`, {
+      owner: owner,
+      repo: repo,
+      pull_number: pr_number,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+  } catch(error) {
+    throw new Error(
+      `The approvers for pull request #${pr_number} could not be set. Details: ${error.message}`
+    )
+  }
+}
+
 function computeApprovers(client, org, approvers) {
   core.info('Resolving teams from list of approvers')
   try {
@@ -220,5 +241,6 @@ export {
   getReviews,
   getTeamMembers,
   getYamlData,
-  isMatchingPattern
+  isMatchingPattern,
+  setApprovers
 }

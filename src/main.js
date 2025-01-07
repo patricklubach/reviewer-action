@@ -53,6 +53,14 @@ async function run() {
     // Get the rule who matches the PR title.
     // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
     const rule = utils.getMatchingRule(checkOn, approverFile.rules)
+    if(approverFile.set_approvers) {
+      utils.setApprovers(
+        octokit,
+        owner,
+        repo_name,
+        pr_number)
+      return
+    }
     const approvalsNeededCount = rule.hasOwnProperty('count') ? rule['count'] : 0
 
     // Get a list of all reviews of the PR

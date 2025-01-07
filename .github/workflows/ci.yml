@@ -1,16 +1,19 @@
-name: Continuous Integration
+name: Approvers
 
 on:
   pull_request_review:
-    types: [submitted]
+    types: [dismissed, submitted]
+  pull_request:
+    types: [opened]
 
 permissions:
   contents: read
 
 jobs:
-  test-action:
-    name: GitHub Actions Test
+  set_approvers:
+    name: Set approvers
     runs-on: ubuntu-latest
+    if: github.event.pull_request.opened == true
 
     steps:
       - name: Checkout
@@ -21,8 +24,30 @@ jobs:
         id: npm-ci
         run: npm ci
 
-      - name: Test Local Action
-        id: test-approver-action
+      - name: Check approvals
+        id: set-approvals
+        uses: ./
+        with:
+          approvers_file: .approvers.yaml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pr_number: ${{ github.event.pull_request.number }}
+
+  check_approvals:
+    name: Approvals Check
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request_review.action == 'submitted' || github.event.pull_request_review.action == 'dismissed' }}
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm ci
+
+      - name: Check approvals
+        id: check-approvals
         uses: ./
         with:
           approvers_file: .approvers.yaml
