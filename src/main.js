@@ -58,7 +58,9 @@ async function run() {
         octokit,
         owner,
         repo_name,
-        pr_number)
+        pr_number,
+        rule.approvers
+      )
       return
     }
     const approvalsNeededCount = rule.hasOwnProperty('count') ? rule['count'] : 0
