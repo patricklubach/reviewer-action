@@ -145,11 +145,11 @@ function setApprovers(client, owner, repo, pr_number, allReviewers) {
 
       switch(type) {
         case 'user': {
-          reviewers.push(reviewer)
+          reviewers.push(principle)
           break
         }
         case 'team': {
-          teamReviewers.push(reviewer)
+          teamReviewers.push(principle)
           break
         }
         default: {
