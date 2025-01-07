@@ -14,7 +14,7 @@
     "format:check": "npx prettier --check .",
     "lint": "npx eslint .",
     "package": "npx ncc build src/index.js -o dist --source-map --license licenses.txt",
-    "test:local": "act pull_request -e event.pull_request.json -W .github/workflows/ci.yml -j 'test-action' -s GITHUB_TOKEN=\"$(gh auth token)\""
+    "test:local": "act pull_request -e event.pull_request.json -W .github/workflows/ci.yml -j 'set_approvers' -s GITHUB_TOKEN=\"$(gh auth token)\""
   },
   "keywords": [
     "GitHub",

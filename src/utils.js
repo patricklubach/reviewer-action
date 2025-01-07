@@ -133,7 +133,7 @@ function isMatchingPattern(checkOn, pattern) {
 }
 
 function setApprovers(client, owner, repo, pr_number, allReviewers) {
-  core.info(`Setting approvers for pull request #${pr_number}`)
+  core.info(`Setting reviewers for pull request #${pr_number}`)
   try {
     const url = `/repos/${owner}/${repo}/pulls/${pr_number}/requested_reviewers`
     core.debug(`Setting reviewers on endpoint: ${url}`)
@@ -159,6 +159,7 @@ function setApprovers(client, owner, repo, pr_number, allReviewers) {
         }
       }
     })
+    core.info(`Setting following reviewers for pull request #${pr_number}: ${allReviewers}`)
     return client.request(`POST ${url}`, {
       owner: owner,
       repo: repo,

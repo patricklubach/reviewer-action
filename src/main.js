@@ -54,13 +54,14 @@ async function run() {
     // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
     const rule = utils.getMatchingRule(checkOn, approverFile.rules)
     if(approverFile.set_approvers) {
-      utils.setApprovers(
+      const { data: id } = await utils.setApprovers(
         octokit,
         owner,
         repo_name,
         pr_number,
         rule.approvers
       )
+      core.info(`Updated PR #${id.number}`)
       return
     }
     const approvalsNeededCount = rule.hasOwnProperty('count') ? rule['count'] : 0
