@@ -1,5 +1,3 @@
-check_on: title
-
 rules:
   - regex: ^feature/
     count: 1

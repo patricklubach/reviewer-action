@@ -36,14 +36,15 @@ async function run() {
     )
 
     // Determines on what to check. Either title or branch name
-    let checkOn = 'branch_name'
+    const checkOnType = approverFile.hasOwnProperty('check_on') ? approverFile.check_on : 'branch_name'
+    let checkOn
 
-    if(approverFile.hasOwnProperty('check_on') && approverFile.check_on === 'title') {
+    if(approverFile.hasOwnProperty('check_on') && checkOnType === 'title') {
       checkOn = pullRequest.title
       core.debug(`Action will check on title: "${checkOn}"`)
     }
 
-    if(approverFile.hasOwnProperty('check_on') && approverFile.check_on === 'branch_name') {
+    if(approverFile.hasOwnProperty('check_on') && checkOnType === 'branch_name') {
       checkOn = pullRequest.head.ref
       core.debug(`Action will check on branch: "${checkOn}"`)
     }
