@@ -13,7 +13,7 @@ jobs:
   set_approvers:
     name: Set approvers
     runs-on: ubuntu-latest
-    if: github.event.pull_request.opened == true
+    if: github.event.pull_request == 'opened'
 
     steps:
       - name: Checkout
