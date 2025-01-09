@@ -54,15 +54,29 @@ async function run() {
     // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
     const rule = utils.getMatchingRule(checkOn, approverFile.rules)
     if(approverFile.set_approvers) {
-      const { data: id } = await utils.setApprovers(
-        octokit,
-        owner,
-        repo_name,
-        pr_number,
-        rule.approvers
-      )
-      core.info(`Updated PR #${id.number}`)
-      return
+      // check if requested reviewers are already set on pr
+      const requestedReviewerUsers = pullRequest.requested_reviewers.map((reviewer) => {
+        return `user:${reviewer.login}`
+      });
+      const requestedReviewerTeams = pullRequest.requested_teams.map((team) => {
+        return `team:${team.login}`
+      });
+      core.debug(`requested reviewer users are: ${requestedReviewerUsers}`)
+      core.debug(`requested reviewer teams are: ${requestedReviewerTeams}`)
+      core.debug(`required reviewers are: ${rule.approvers}`)
+      if(JSON.stringify(rule.approvers.sort()) != JSON.stringify(requestedReviewerUsers.concat(requestedReviewerTeams).sort())) {
+        const { data: id } = await utils.setApprovers(
+          octokit,
+          owner,
+          repo_name,
+          pr_number,
+          rule.approvers
+        )
+        core.info(`Updated PR #${id.number}`)
+        return
+      } else {
+        core.debug('Required and requested reviewers are already the same. Skipping assignment')
+      }
     }
     const approvalsNeededCount = rule.hasOwnProperty('count') ? rule['count'] : 0
 

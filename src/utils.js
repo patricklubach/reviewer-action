@@ -140,6 +140,7 @@ function setApprovers(client, owner, repo, pr_number, allReviewers) {
     const reviewers = []
     const teamReviewers = []
 
+    // TODO: if pr creator is in approvers file rule defined skip it
     allReviewers.forEach(reviewer => {
       let [type, principle] = reviewer.split(':')
 
