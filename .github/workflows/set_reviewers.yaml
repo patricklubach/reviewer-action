@@ -1,0 +1,30 @@
+name: Set reviewers
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  set_approvers:
+    name: Set reviewers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm ci
+
+      - name: Set Approvers
+        id: set-approvals
+        uses: ./
+        with:
+          approvers_file: .approvers.yaml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pr_number: ${{ github.event.pull_request.number }}
