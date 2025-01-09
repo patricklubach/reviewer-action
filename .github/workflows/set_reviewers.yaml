@@ -2,13 +2,19 @@ name: Set reviewers
 
 on:
   pull_request:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - review_requested
+      - review_request_removed
 
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
-  set_approvers:
+  set_reviewers:
     name: Set reviewers
     runs-on: ubuntu-latest
 
@@ -21,8 +27,7 @@ jobs:
         id: npm-ci
         run: npm ci
 
-      - name: Set Approvers
-        id: set-approvals
+      - name: Set reviewers
         uses: ./
         with:
           approvers_file: .approvers.yaml
