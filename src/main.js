@@ -70,6 +70,7 @@ async function run() {
       core.debug(`requested reviewer teams are: ${requestedReviewerTeams}`)
       core.debug(`required reviewers are: ${rule.approvers}`)
       if(JSON.stringify(rule.approvers.sort()) != JSON.stringify(requestedReviewerUsers.concat(requestedReviewerTeams).sort())) {
+        core.info(`Setting reviewers for pull request #${id.number}`)
         const { data: id } = await utils.setApprovers(
           octokit,
           owner,
@@ -77,7 +78,10 @@ async function run() {
           prNumber,
           rule.approvers
         )
-        core.info(`Updated PR #${id.number}`)
+        core.info(`Updated reviewers for PR #${id.number}`)
+        return
+      } else {
+        core.info('Required and requested reviewers are already the same. Skipping assignment')
         return
       }
     }
