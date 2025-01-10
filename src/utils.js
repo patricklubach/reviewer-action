@@ -7,6 +7,7 @@ import YAML from 'yaml'
 
 import * as core from '@actions/core'
 
+
 function getReviews(client, owner, repo, pr_number) {
   core.info(`Getting reviews of pull request #${pr_number}`)
   try {
@@ -131,6 +132,52 @@ function isMatchingPattern(checkOn, pattern) {
   }
 }
 
+function setApprovers(client, owner, repo, pr_number, allReviewers) {
+  core.info(`Setting reviewers for pull request #${pr_number}`)
+  try {
+    const url = `/repos/${owner}/${repo}/pulls/${pr_number}/requested_reviewers`
+    core.debug(`Setting reviewers on endpoint: ${url}`)
+    const reviewers = []
+    const teamReviewers = []
+
+    // TODO: if pr creator is in approvers file rule defined skip it
+    allReviewers.forEach(reviewer => {
+      let [type, principle] = reviewer.split(':')
+
+      switch(type) {
+        case 'user': {
+          reviewers.push(principle)
+          break
+        }
+        case 'team': {
+          teamReviewers.push(principle)
+          break
+        }
+        default: {
+          throw new Error(
+            `The ${type} "${principle}" cannot be verified because it is not of type "user" or "team"!`
+          )
+        }
+      }
+    })
+    core.info(`Setting following reviewers for pull request #${pr_number}: ${allReviewers}`)
+    return client.request(`POST ${url}`, {
+      owner: owner,
+      repo: repo,
+      pull_number: pr_number,
+      reviewers: reviewers,
+      team_reviewers: teamReviewers,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+  } catch(error) {
+    throw new Error(
+      `The approvers for pull request #${pr_number} could not be set. Details: ${error.message}`
+    )
+  }
+}
+
 function computeApprovers(client, org, approvers) {
   core.info('Resolving teams from list of approvers')
   try {
@@ -220,5 +267,6 @@ export {
   getReviews,
   getTeamMembers,
   getYamlData,
-  isMatchingPattern
+  isMatchingPattern,
+  setApprovers
 }

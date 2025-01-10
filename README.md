@@ -35,19 +35,44 @@ None
 ## Example usage
 
 ```yaml
-name: Approvals Check
+name: Approvers
 
 on:
   pull_request_review:
-    types: [submitted]
+    types: [dismissed, submitted]
+  pull_request:
+    types: [opened]
 
 permissions:
   contents: read
 
 jobs:
-  approvals:
+  set_approvers:
+    name: Set approvers
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.action == 'opened' }}
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm ci
+
+      - name: Check approvals
+        id: set-approvals
+        uses: ./
+        with:
+          approvers_file: .approvers.yaml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pr_number: ${{ github.event.pull_request.number }}
+
+  check_approvals:
     name: Approvals Check
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request_review.action == 'submitted' || github.event.pull_request_review.action == 'dismissed' }}
 
     steps:
       - name: Checkout

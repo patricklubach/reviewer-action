@@ -1,0 +1,31 @@
+name: Check reviews
+
+on:
+  pull_request_review:
+    types: [dismissed, submitted]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check_reviews:
+    name: Check reviews
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm ci
+
+      - name: Check reviews
+        id: check-reviews
+        uses: ./
+        with:
+          approvers_file: .approvers.yaml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pr_number: ${{ github.event.pull_request.number }}

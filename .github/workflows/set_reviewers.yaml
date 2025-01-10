@@ -1,15 +1,21 @@
-name: Continuous Integration
+name: Set reviewers
 
 on:
-  pull_request_review:
-    types: [submitted]
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - review_requested
+      - review_request_removed
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
-  test-action:
-    name: GitHub Actions Test
+  set_reviewers:
+    name: Set reviewers
     runs-on: ubuntu-latest
 
     steps:
@@ -21,10 +27,10 @@ jobs:
         id: npm-ci
         run: npm ci
 
-      - name: Test Local Action
-        id: test-approver-action
+      - name: Set reviewers
         uses: ./
         with:
           approvers_file: .approvers.yaml
           token: ${{ secrets.GITHUB_TOKEN }}
           pr_number: ${{ github.event.pull_request.number }}
+          set_reviewers: true
