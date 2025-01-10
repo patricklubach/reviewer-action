@@ -34,23 +34,28 @@ None
 
 ## Example usage
 
+When you want to let the action set the reviewers for each pull request for you:
+
 ```yaml
-name: Approvers
+name: Set reviewers
 
 on:
-  pull_request_review:
-    types: [dismissed, submitted]
   pull_request:
-    types: [opened]
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - review_requested
+      - review_request_removed
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
-  set_approvers:
-    name: Set approvers
+  set_reviewers:
+    name: Set reviewers
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.action == 'opened' }}
 
     steps:
       - name: Checkout
@@ -61,18 +66,32 @@ jobs:
         id: npm-ci
         run: npm ci
 
-      - name: Check approvals
-        id: set-approvals
+      - name: Set reviewers
         uses: ./
         with:
           approvers_file: .approvers.yaml
           token: ${{ secrets.GITHUB_TOKEN }}
           pr_number: ${{ github.event.pull_request.number }}
+          set_reviewers: true
+```
 
-  check_approvals:
-    name: Approvals Check
+When you want to let the action check the reviewes when a review was dismissed or submitted:
+
+```yaml
+name: Check reviews
+
+on:
+  pull_request_review:
+    types: [dismissed, submitted]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check_reviews:
+    name: Check reviews
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request_review.action == 'submitted' || github.event.pull_request_review.action == 'dismissed' }}
 
     steps:
       - name: Checkout
@@ -83,8 +102,8 @@ jobs:
         id: npm-ci
         run: npm ci
 
-      - name: Check approvals
-        id: check-approvals
+      - name: Check reviews
+        id: check-reviews
         uses: ./
         with:
           approvers_file: .approvers.yaml
@@ -164,7 +183,7 @@ rules:
 
 ## Test locally
 
-To test the action locally, first install [`act`](https://github.com/nektos/act). Then you need to update the `event.json` file to match an already open pull request. Afterwards you can simply run:
+To test the action locally, first install [`act`](https://github.com/nektos/act). Then you need to create a `event.json` file to match an already open pull request. For more information see [act documentation](https://nektosact.com/usage/index.html#skipping-jobs). Afterwards you can simply run:
 
 ```bash
 npm run test:local
