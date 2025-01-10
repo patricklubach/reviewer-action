@@ -7,7 +7,7 @@ async function run() {
   try {
     const prNumber = core.getInput('pr_number', { required: true })
     const token = core.getInput('token', { required: true })
-    const setReviwers = core.getInput('set_reviewers', { required: false }) || false
+    const setReviewers = core.getInput('set_reviewers', { required: false }) || false
     const octokit = new Octokit({ auth: token })
     const repo = process.env.GITHUB_REPOSITORY
     const [owner, repoName] = repo.split('/')
@@ -57,7 +57,9 @@ async function run() {
 
     // check if requested reviewers are already set on pr
     // this can be configured using the input
-    if(setReviwers) {
+    if(setReviewers) {
+      core.info('set_reviewers is set')
+      core.info('Checking which reviewers are already set on pr')
       const requestedReviewerUsers = pullRequest.requested_reviewers.map((reviewer) => {
         return `user:${reviewer.login}`
       });
@@ -77,8 +79,6 @@ async function run() {
         )
         core.info(`Updated PR #${id.number}`)
         return
-      } else {
-        core.debug('Required and requested reviewers are already the same. Skipping assignment')
       }
     }
     const approvalsNeededCount = rule.hasOwnProperty('count') ? rule['count'] : 0
