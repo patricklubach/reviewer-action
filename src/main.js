@@ -5,18 +5,19 @@ import * as utils from './utils.js'
 
 async function run() {
   try {
-    const pr_number = core.getInput('pr_number', { required: true })
+    const prNumber = core.getInput('pr_number', { required: true })
     const token = core.getInput('token', { required: true })
+    const setReviwers = core.getInput('set_reviewers', { required: false }) || false
     const octokit = new Octokit({ auth: token })
     const repo = process.env.GITHUB_REPOSITORY
-    const [owner, repo_name] = repo.split('/')
+    const [owner, repoName] = repo.split('/')
 
     // Inputs debugs outputs
     core.debug('Inputs:')
     core.debug(`repo: ${repo}`)
     core.debug(`owner: ${owner}`)
-    core.debug(`repo_name: ${repo_name}`)
-    core.debug(`pr_number: ${pr_number}`)
+    core.debug(`repo_name: ${repoName}`)
+    core.debug(`pr_number: ${prNumber}`)
 
     // Get the data from config file
     const filePath = core.getInput('approvers_file', { required: false })
@@ -26,8 +27,8 @@ async function run() {
     const { data: pullRequest } = await utils.getPullRequest(
       octokit,
       owner,
-      repo_name,
-      pr_number
+      repoName,
+      prNumber
     )
 
     var checkOn = 'branch_name'
@@ -53,8 +54,10 @@ async function run() {
     // Get the rule who matches the PR title.
     // When no matching rule is found then it tries to fallback to the default rule. If none is defined it throws an error.
     const rule = utils.getMatchingRule(checkOn, approverFile.rules)
-    if(approverFile.set_approvers) {
-      // check if requested reviewers are already set on pr
+
+    // check if requested reviewers are already set on pr
+    // this can be configured using the input
+    if(setReviwers) {
       const requestedReviewerUsers = pullRequest.requested_reviewers.map((reviewer) => {
         return `user:${reviewer.login}`
       });
@@ -68,8 +71,8 @@ async function run() {
         const { data: id } = await utils.setApprovers(
           octokit,
           owner,
-          repo_name,
-          pr_number,
+          repoName,
+          prNumber,
           rule.approvers
         )
         core.info(`Updated PR #${id.number}`)
@@ -84,8 +87,8 @@ async function run() {
     const { data: reviews } = await utils.getReviews(
       octokit,
       owner,
-      repo_name,
-      pr_number
+      repoName,
+      prNumber
     )
 
     if(rule['approvers'].length > reviews.length) {

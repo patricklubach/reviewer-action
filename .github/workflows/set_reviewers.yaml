@@ -33,3 +33,4 @@ jobs:
           approvers_file: .approvers.yaml
           token: ${{ secrets.GITHUB_TOKEN }}
           pr_number: ${{ github.event.pull_request.number }}
+          set_reviewers: true
