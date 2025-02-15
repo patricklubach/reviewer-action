@@ -6,15 +6,16 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "env": "docker run -it --rm -v $PWD:/workspace --entrypoint scripts/ci.sh --workdir /workspace node:23",
-    "update:lock": "npm update --save --include=dev",
-    "dev": "npm ci --include=dev && npm run bundle",
+    "build": "tsc",
     "bundle": "npm run format:write && npm run package",
+    "dev": "npm ci --include=dev && npm run bundle",
+    "env": "docker run -it --rm -v $PWD:/workspace --entrypoint scripts/ci.sh --workdir /workspace node:23",
     "format:write": "npx prettier --write .",
     "format:check": "npx prettier --check .",
     "lint": "npx eslint .",
     "package": "npx ncc build src/index.js -o dist --source-map --license licenses.txt",
-    "test:local:check": "act pull_request -e event.pull_request_example.json -W .github/workflows/check_reviews.yaml -j 'check_reviews' -s GITHUB_TOKEN=\"$(gh auth token)\" --input-file action.inputs"
+    "test:local:check": "act pull_request -e event.pull_request_example.json -W .github/workflows/check_reviews.yaml -j 'check_reviews' -s GITHUB_TOKEN=\"$(gh auth token)\" --input-file action.inputs",
+    "update:lock": "npm update --save --include=dev"
   },
   "keywords": [
     "GitHub",
