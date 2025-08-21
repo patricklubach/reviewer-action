@@ -5,17 +5,21 @@ import * as core from '@actions/core'
 /**
  * Manages and validates rules for review system operations.
  *
- * @class Rules
+ * @class
  */
-
 export class Rule {
+  regex: string
+  type: string
+  amount: number | null
+  reviewers: Reviewers
+  default: string
+
   /**
    * Constructs a new rule object with specified properties.
    *
    * @param {Object} rule - The rule object containing configuration properties
-   * @returns {Rule} An instance of the Rule class
    */
-  constructor(rule) {
+  constructor(rule: any) {
     this.regex = rule.regex || null
     this.type = rule.type
     this.amount = rule.amount || null
@@ -47,13 +51,13 @@ export class Rule {
  */
 
 export class Rules {
+  rules: Array<any>
   /**
    * Constructs a new instance of the Rules class, initializing with provided rules.
    *
    * @param {Array} rules - Array of rule objects to initialize with
-   * @returns {Rules} An instance of the Rules class
    */
-  constructor(rules) {
+  constructor(rules: Array<any>) {
     this.rules = []
     this.init(rules)
   }
@@ -63,14 +67,14 @@ export class Rules {
    *
    * @private
    */
-  init(rules) {
-    this.rules = rules.map(rule => new Rule(rule))
+  init(rules: any) {
+    this.rules = rules.map((rule: any) => new Rule(rule))
   }
 
   /**
    * Retrieves the default rule defined for the system.
    *
-   * @returns {Rule} The default rule if found, else throws an error
+   * @private
    */
   getDefaultRule() {
     core.info('Getting default rule')
@@ -88,9 +92,10 @@ export class Rules {
    * Finds the matching rule based on a given condition.
    *
    * @param {string} condition - The condition to check against rules' regex patterns
-   * @returns {Rule} The matching rule, or null if none match
+   *
+   * @private
    */
-  getMatchingRule(condition) {
+  getMatchingRule(condition: string) {
     core.debug('Attempting to find matching rule for condition: ' + condition)
     try {
       for (const rule of this.rules) {
@@ -124,7 +129,7 @@ export class Rules {
 
         // If no match found, move to the next rule
       }
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         `Regular expression check failed. Details: ${error.message}`
       )
@@ -135,7 +140,7 @@ export class Rules {
     )
     try {
       return this.getDefaultRule()
-    } catch (error) {
+    } catch (error: any) {
       core.error(error.message)
       throw new Error('No matching rule and no default rule exists.')
     }

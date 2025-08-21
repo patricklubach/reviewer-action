@@ -32,7 +32,7 @@ export async function run() {
     }
 
     const { data: pullRequestData } = await pr.getPullRequest(owner, reponame, number)
-    const { data: pullRequestReviews } = await pr.getReviews(pullRequestData)
+    const { data: pullRequestReviews } = await pr.getReviews(owner, reponame, number)
     const pullRequest = new pr.PullRequest(pullRequestData, pullRequestReviews)
 
     const config = new Config(inputs.configPath)
@@ -47,7 +47,7 @@ export async function run() {
     // Note: All previously set reviewers on the pr are overwritten and reviews are resetted!
     if (inputs.setReviewers) {
       core.debug('set_reviewers property is set')
-      if (!utils.setReviewers()) pullRequest.setPrReviewers(reviewers.reviewers)
+      if (!utils.reviewersSet(reviewers, pullRequest)) pullRequest.setPrReviewers(reviewers.reviewers)
       return
     }
 
@@ -55,7 +55,7 @@ export async function run() {
     const approvedReviews = utils.getApprovedReviews(pullRequest.reviews)
 
     // Check whether all conditions are met
-    if (!check.isFulfilled(matchingRule, approvedReviews, reviewers.entities)) {
+    if (!check.isFulfilled(matchingRule, approvedReviews)) {
       throw new Error('Rule is not fulfilled!')
     }
     core.info(`Success! Rule is fulfilled!`)

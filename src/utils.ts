@@ -3,14 +3,13 @@
 */
 
 import * as core from '@actions/core'
-import { PullRequestReviewPayload } from './interfaces'
 import { PullRequest } from './pullrequest'
 
 /**
  * Validates if the event name is either 'pull_request' or 'pull_request_review'.
  * If not, throws an error indicating unsupported event type.
  *
- * @param {String} eventName - The name of the event to validate
+ * @param {string} eventName - The name of the event to validate
  * @throws Error - If the event type is not supported
  */
 function validateEvent(eventName: string) {
@@ -29,9 +28,9 @@ function validateEvent(eventName: string) {
  *
  * @param {Array} reviewers - Array of reviewer strings (e.g., 'user:alice', 'team:engineering')
  * @param {Object} pullRequest - Pull request object containing repository details
- * @returns {Boolean} true if all required reviewers are correctly set, false otherwise
+ * @returns {boolean} true if all required reviewers are correctly set, false otherwise
  */
-function setReviewers(reviewers: Array<string>, pullRequest: PullRequest) {
+function reviewersSet(reviewers: Array<string>, pullRequest: PullRequest): boolean {
   core.info('Checking if reviewers are already set')
   const userReviewers = reviewers.filter(reviewer => {
     if (reviewer.startsWith('user')) {
@@ -44,11 +43,11 @@ function setReviewers(reviewers: Array<string>, pullRequest: PullRequest) {
     }
   })
 
-  const pullRequestRequestedReviewerUsers = pullRequest.requested_reviewers
-  const pullRequestRequestedReviewerTeams = pullRequest.requested_teams
+  const pullRequestRequestedReviewerUsers = pullRequest.requestedReviewers
+  const pullRequestRequestedReviewerTeams = pullRequest.requestedTeams
 
   // Check if desired reviewer user are already assigned to the pr
-  pullRequestRequestedReviewerUsers.forEach(reviewer => {
+  pullRequestRequestedReviewerUsers.forEach((reviewer: any) => {
     let reviewerName = reviewer.login
     core.debug(`Check if user ${reviewerName} is already set`)
     if (!userReviewers.includes(reviewerName)) {
@@ -60,7 +59,7 @@ function setReviewers(reviewers: Array<string>, pullRequest: PullRequest) {
   })
 
   // Check if desired reviewer teams are already assigned to the pr
-  pullRequestRequestedReviewerTeams.forEach(reviewer => {
+  pullRequestRequestedReviewerTeams.forEach((reviewer: any) => {
     let reviewerName = reviewer.login
     core.debug(`Check if team ${reviewerName} is already set`)
     if (!teamReviewers.includes(reviewerName)) {
@@ -75,76 +74,14 @@ function setReviewers(reviewers: Array<string>, pullRequest: PullRequest) {
 }
 
 /**
- * Updates the requested reviewers for a pull request using GitHub API.
- *
- * @param {Object} pullRequest - Pull request object containing repository details
- * @param {Array} reviewers - Array of reviewer strings (e.g., 'user:alice', 'team:engineering')
- * @returns {Promise} Promise with client.rest.pulls.post response
- */
-function setPrReviewers(pullRequest, reviewers) {
-  try {
-    const userReviewers = reviewers.filter(reviewer =>
-      reviewer.startsWith('user')
-    )
-    const teamReviewers = reviewers.filter(reviewer =>
-      reviewer.startsWith('team')
-    )
-
-    core.info(`Setting reviewers for pull request #${pullRequest.number}`)
-    return client.request(
-      `POST /repos/${owner}/${repo}/pulls/${pullRequest.number}/requested_reviewers`,
-      {
-        owner: pullRequest.repository.owner,
-        repo: pullRequest.repository.repo,
-        pull_number: pullRequest.number,
-        reviewers: userReviewers,
-        team_reviewers: teamReviewers,
-        headers: {
-          'X-GitHub-Api-Version': '2022-11-28'
-        }
-      }
-    )
-  } catch (error) {
-    throw new Error(
-      `The reviewers for pull request #${pullRequest.number} could not be set. Details: ${error.message}`
-    )
-  }
-}
-
-/**
- * Fetches a specific pull request by its number using GitHub API.
- *
- * @param {Object} client - Instance of the GitHub API client
- * @param {String} owner - Owner repository name
- * @param {String} repoName - Repository name
- * @param {Number} number - Pull request number to fetch
- * @returns {Promise} Promise with pull request data structure
- */
-async function getPullRequest(client, owner, repoName, number): Promise<PullRequestReviewPayload> {
-  core.info(`Getting pull request #${number}`)
-  try {
-    core.debug(`Fetching pull request #${number}`)
-    return ({ data: pullRequest } = await client.rest.pulls.get({
-      owner: owner,
-      repo: repoName,
-      pull_number: number
-    }))
-  } catch (error: any) {
-    throw new Error(
-      `The pull request could not be retrieved. Details: ${error.message}`
-    )
-  }
-}
-
-/**
  * Determines the condition value based on the given type.
  *
- * @param {String} conditionType - Type of condition ('branch_name' or 'title')
+ * @param {string} conditionType - Type of condition ('branch_name' or 'title')
  * @param {Object} pullRequest - Pull request object containing necessary data
- * @returns {String} Corresponding condition value
+ * @returns {string} Corresponding condition value
  * @throws Error - If invalid condition type is provided
  */
-function getCondition(conditionType, pullRequest) {
+function getCondition(conditionType: string, pullRequest: PullRequest) {
   core.debug(
     `Determine condition value based on condition type '${conditionType}'`
   )
@@ -164,11 +101,11 @@ function getCondition(conditionType, pullRequest) {
  * @returns {Array} Filtered list of approved reviews
  * @throws Error - If filtering fails
  */
-function getApprovedReviews(reviews) {
+function getApprovedReviews(reviews: any) {
   core.info('Filtering reviews by status = approved')
   try {
-    return reviews.filter(review => review.state === 'APPROVED')
-  } catch (error) {
+    return reviews.filter((review: any) => review.state === 'APPROVED')
+  } catch (error: any) {
     throw new Error(
       `Cannot filter reviews for status 'APPROVED'. Details: ${error.message}`
     )
@@ -178,9 +115,6 @@ function getApprovedReviews(reviews) {
 export {
   getApprovedReviews,
   getCondition,
-  getPullRequest,
-  setPrReviewers,
-  setReviewers,
+  reviewersSet,
   validateEvent
 }
-
