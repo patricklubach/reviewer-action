@@ -128,6 +128,9 @@ export class Rules {
         }
 
         // If no match found, move to the next rule
+        core.warning(
+          `No rule matches pattern ${rule.type} "${condition}". Trying to fallback to default rule`
+        )
       }
     } catch (error: any) {
       throw new Error(
@@ -135,9 +138,6 @@ export class Rules {
       )
     }
 
-    core.warning(
-      `No rule matching pattern matches ${rule.type} "${condition}". Trying to fallback to default rule`
-    )
     try {
       return this.getDefaultRule()
     } catch (error: any) {
