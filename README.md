@@ -45,8 +45,6 @@ on:
       - opened
       - reopened
       - ready_for_review
-      - review_requested
-      - review_request_removed
 
 permissions:
   contents: read
@@ -75,7 +73,7 @@ jobs:
           set_reviewers: true
 ```
 
-When you want to let the action check the reviewes when a review was dismissed or submitted:
+When you want to let the action check the reviews when a review was dismissed or submitted:
 
 ```yaml
 name: Check reviews
@@ -186,5 +184,5 @@ rules:
 To test the action locally, first install [`act`](https://github.com/nektos/act). Then you need to create a `event.json` file to match an already open pull request. For more information see [act documentation](https://nektosact.com/usage/index.html#skipping-jobs). Afterwards you can simply run:
 
 ```bash
-npm run test:local
+npm run test:local:check
 ```
