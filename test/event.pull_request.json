@@ -1,0 +1,13 @@
+{
+  "action": "opened",
+  "number": 42,
+  "pull_request": {
+    "head": {
+      "ref": "cleanup"
+    },
+    "base": {
+      "ref": "main"
+    },
+    "number": 46
+  }
+}

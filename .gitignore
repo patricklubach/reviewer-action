@@ -101,6 +101,3 @@ __tests__/runner/*
 .idea
 .vscode
 *.code-workspace
-
-event.json
-event.*.json
