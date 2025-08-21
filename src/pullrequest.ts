@@ -1,9 +1,8 @@
-import * as core from '@actions/core';
-import * as github from '@actions/github';
+import * as core from '@actions/core'
+import * as github from '@actions/github'
 
-import { inputs } from './inputs.js';
-import { WebhookPayload } from './interfaces';
-
+import { inputs } from './inputs.js'
+import { WebhookPayload } from './interfaces'
 
 const octokit = github.getOctokit(inputs.token)
 
@@ -85,7 +84,11 @@ export class PullRequest {
   }
 }
 
-export async function getPullRequest(owner: string, reponame: string, prNumber: number): Promise<WebhookPayload> {
+export async function getPullRequest(
+  owner: string,
+  reponame: string,
+  prNumber: number
+): Promise<WebhookPayload> {
   /**
    * Retrieves information about a specific pull request.
    *
@@ -97,9 +100,9 @@ export async function getPullRequest(owner: string, reponame: string, prNumber: 
   try {
     return await octokit.rest.pulls.get({
       owner: owner,
-        repo: reponame,
-        pull_number: prNumber
-      })
+      repo: reponame,
+      pull_number: prNumber
+    })
   } catch (error) {
     throw new Error(`The pull request could not be retrieved`, {
       cause: error
@@ -107,7 +110,11 @@ export async function getPullRequest(owner: string, reponame: string, prNumber: 
   }
 }
 
-export async function getReviews(owner: string, reponame: string, prNumber: number): Promise<any> {
+export async function getReviews(
+  owner: string,
+  reponame: string,
+  prNumber: number
+): Promise<any> {
   /**
    * Fetches the reviews for a specified pull request.
    *
