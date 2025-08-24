@@ -30,7 +30,10 @@ function validateEvent(eventName: string) {
  * @param {Object} pullRequest - Pull request object containing repository details
  * @returns {boolean} true if all required reviewers are correctly set, false otherwise
  */
-function reviewersSet(reviewers: Array<string>, pullRequest: PullRequest): boolean {
+function reviewersSet(
+  reviewers: Array<string>,
+  pullRequest: PullRequest
+): boolean {
   core.info('Checking if reviewers are already set')
   const userReviewers = reviewers.filter(reviewer => {
     if (reviewer.startsWith('user')) {
@@ -112,9 +115,4 @@ function getApprovedReviews(reviews: any) {
   }
 }
 
-export {
-  getApprovedReviews,
-  getCondition,
-  reviewersSet,
-  validateEvent
-}
+export { getApprovedReviews, getCondition, reviewersSet, validateEvent }

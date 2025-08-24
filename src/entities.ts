@@ -5,12 +5,14 @@ import { inputs } from './inputs.js'
 
 const client = github.getOctokit(inputs.token)
 const repo: string | undefined = process.env.GITHUB_REPOSITORY
-const [owner, repoName] = repo.split('/')
+if (!repo) {
+  throw new Error('GITHUB_REPOSITORY environment variable is not defined')
+}
+const [owner, _] = repo.split('/')
 
+// TODO: Implement iterator so that I can use rule.reviewers instead of rule.reviewers.reviewers
 /**
- * Represents a collection of reviewers who have been configured to validate pull requests.
- *
- * @class Reviewers
+ * Represents a collection of reviewers who have been configured to review pull requests.
  */
 export class Reviewers {
   reviewers: Array<string>
@@ -137,10 +139,10 @@ class Team extends Entity {
    * @returns {Array} An array of User objects representing the team members
    * @throws {Error} If there's an issue fetching team members
    */
-  async resolveTeam(): Promise<User[]> {
+  resolveTeam(): Promise<User[]> {
     core.debug(`Getting members for the team ${this.name}`)
     try {
-      const response = await client.request(
+      const response = client.request(
         `GET /orgs/${owner}/teams/${this.name}/members`,
         {
           org: owner,

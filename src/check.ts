@@ -1,6 +1,6 @@
-import * as core from '@actions/core';
-import { PullRequestReview } from './interfaces';
-import { Rule } from './rules';
+import * as core from '@actions/core'
+import { PullRequestReview } from './interfaces'
+import { Rule } from './rules'
 
 /**
  * A utility class for evaluating review rules and determining their fulfillment status.
@@ -8,12 +8,6 @@ import { Rule } from './rules';
  * @class Check
  */
 class Check {
-  /**
-   * Constructs an instance of the Check class.
-   * The constructor does not take any parameters.
-   */
-  constructor() {}
-
   /**
    * Checks if a given rule is fulfilled based on the provided reviews and reviewers.
    *
@@ -23,12 +17,15 @@ class Check {
    * @returns {Boolean} True if the rule is fulfilled; False otherwise.
    * @throws {Error} If the rule type is not recognized.
    */
-  isFulfilled(rule: Rule, pullRequestReviews: Array<PullRequestReview>): boolean {
+  isFulfilled(
+    rule: Rule,
+    pullRequestReviews: Array<PullRequestReview>
+  ): boolean {
     core.info(`Check if rule is fulfilled...`)
     switch (rule.type) {
       case 'ALL':
         core.debug(`Rule type is 'ALL'`)
-        for (const reviewer of rule.reviewers) {
+        for (let reviewer = 0; reviewer < rule.reviewers.reviewers.length; reviewer++) {
           core.debug(`Validating reviewer: ${reviewer}`)
           const validated = pullRequestReviews.some(
             review => review.user.login === reviewer.name

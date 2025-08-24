@@ -15,24 +15,45 @@ export async function run() {
     core.info(`Starting reviewer action (version: ${version})`)
     utils.validateEvent(github.context.eventName)
 
+    const eventPayload: WebhookPayload = github?.context?.payload
+    if (!eventPayload) {
+      throw new Error("event payload is empty.");
 
-    const eventPayload: WebhookPayload = github.context.payload
-    const owner: string | undefined = eventPayload.pull_request.head.repo.owner.login
-    const reponame: string | undefined = eventPayload.pull_request.head.repo.name
+    }
+    if (!eventPayload.pull_request) {
+      throw new Error('event payload does not contain pull_request.');
+    }
+
+    const owner: string | undefined =
+      eventPayload.pull_request.head.repo.owner.login
+    const reponame: string | undefined =
+      eventPayload.pull_request.head.repo.name
     const number: number | undefined = eventPayload.pull_request.number
 
     if (typeof owner != 'string') {
       throw new Error('Could not find owner of repository in event payload!')
     }
     if (typeof reponame != 'string') {
-      throw new Error('Could not find repo name of repository in event payload!')
+      throw new Error(
+        'Could not find repo name of repository in event payload!'
+      )
     }
     if (typeof number != 'number') {
-      throw new Error('Could not find number of pull requeest in event payload!')
+      throw new Error(
+        'Could not find number of pull request in event payload!'
+      )
     }
 
-    const { data: pullRequestData } = await pr.getPullRequest(owner, reponame, number)
-    const { data: pullRequestReviews } = await pr.getReviews(owner, reponame, number)
+    const { data: pullRequestData } = await pr.getPullRequest(
+      owner,
+      reponame,
+      number
+    )
+    const { data: pullRequestReviews } = await pr.getReviews(
+      owner,
+      reponame,
+      number
+    )
     const pullRequest = new pr.PullRequest(pullRequestData, pullRequestReviews)
 
     const config = new Config(inputs.configPath)
@@ -47,7 +68,8 @@ export async function run() {
     // Note: All previously set reviewers on the pr are overwritten and reviews are resetted!
     if (inputs.setReviewers) {
       core.debug('set_reviewers property is set')
-      if (!utils.reviewersSet(reviewers, pullRequest)) pullRequest.setPrReviewers(reviewers.reviewers)
+      if (!utils.reviewersSet(reviewers, pullRequest))
+        pullRequest.setPrReviewers(reviewers.reviewers)
       return
     }
 
