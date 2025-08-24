@@ -47,7 +47,13 @@ async function run() {
     try {
         core.info(`Starting reviewer action (version: ${version_1.version})`);
         utils.validateEvent(github.context.eventName);
-        const eventPayload = github.context.payload;
+        const eventPayload = github?.context?.payload;
+        if (!eventPayload) {
+            throw new Error("event payload is empty.");
+        }
+        if (!eventPayload.pull_request) {
+            throw new Error('event payload does not contain pull_request.');
+        }
         const owner = eventPayload.pull_request.head.repo.owner.login;
         const reponame = eventPayload.pull_request.head.repo.name;
         const number = eventPayload.pull_request.number;
@@ -58,7 +64,7 @@ async function run() {
             throw new Error('Could not find repo name of repository in event payload!');
         }
         if (typeof number != 'number') {
-            throw new Error('Could not find number of pull requeest in event payload!');
+            throw new Error('Could not find number of pull request in event payload!');
         }
         const { data: pullRequestData } = await pr.getPullRequest(owner, reponame, number);
         const { data: pullRequestReviews } = await pr.getReviews(owner, reponame, number);

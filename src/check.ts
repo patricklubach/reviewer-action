@@ -9,12 +9,6 @@ import { Rule } from './rules'
  */
 class Check {
   /**
-   * Constructs an instance of the Check class.
-   * The constructor does not take any parameters.
-   */
-  constructor() {}
-
-  /**
    * Checks if a given rule is fulfilled based on the provided reviews and reviewers.
    *
    * @param {Object} rule - The review rule to check, containing a 'type' property that can be 'ALL', 'AMOUNT', or 'ONE_OF_EACH'.
@@ -31,7 +25,7 @@ class Check {
     switch (rule.type) {
       case 'ALL':
         core.debug(`Rule type is 'ALL'`)
-        for (const reviewer of rule.reviewers) {
+        for (let reviewer = 0; reviewer < rule.reviewers.reviewers.length; reviewer++) {
           core.debug(`Validating reviewer: ${reviewer}`)
           const validated = pullRequestReviews.some(
             review => review.user.login === reviewer.name
