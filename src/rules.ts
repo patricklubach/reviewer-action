@@ -64,7 +64,7 @@ export class Rules {
 
   *[Symbol.iterator]() {
     for (const rule of this.rules) {
-      yield rule;
+      yield rule
     }
   }
 

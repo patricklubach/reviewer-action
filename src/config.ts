@@ -1,7 +1,7 @@
-import fs from 'fs';
-import YAML from 'yaml';
+import fs from 'fs'
+import YAML from 'yaml'
 
-import * as core from '@actions/core';
+import * as core from '@actions/core'
 
 /**
  * A custom error class used to indicate invalid configuration conditions.
@@ -14,7 +14,7 @@ class ConfigValidationError extends Error {
 
     // Maintains proper stack trace for where our error was thrown (non-standard)
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ConfigValidationError);
+      Error.captureStackTrace(this, ConfigValidationError)
     }
 
     this.name = this.constructor.name
@@ -90,5 +90,4 @@ class Config {
   }
 }
 
-export { Config };
-
+export { Config }

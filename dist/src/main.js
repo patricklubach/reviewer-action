@@ -49,7 +49,7 @@ async function run() {
         utils.validateEvent(github.context.eventName);
         const eventPayload = github?.context?.payload;
         if (!eventPayload) {
-            throw new Error("event payload is empty.");
+            throw new Error('event payload is empty.');
         }
         if (!eventPayload.pull_request) {
             throw new Error('event payload does not contain pull_request.');

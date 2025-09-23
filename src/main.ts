@@ -17,11 +17,10 @@ export async function run() {
 
     const eventPayload: WebhookPayload = github?.context?.payload
     if (!eventPayload) {
-      throw new Error("event payload is empty.");
-
+      throw new Error('event payload is empty.')
     }
     if (!eventPayload.pull_request) {
-      throw new Error('event payload does not contain pull_request.');
+      throw new Error('event payload does not contain pull_request.')
     }
 
     const owner: string | undefined =
@@ -39,9 +38,7 @@ export async function run() {
       )
     }
     if (typeof number != 'number') {
-      throw new Error(
-        'Could not find number of pull request in event payload!'
-      )
+      throw new Error('Could not find number of pull request in event payload!')
     }
 
     const { data: pullRequestData } = await pr.getPullRequest(

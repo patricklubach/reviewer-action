@@ -29,7 +29,7 @@ export class Reviewers {
 
   *[Symbol.iterator]() {
     for (const reviewer of this.reviewers) {
-      yield reviewer;
+      yield reviewer
     }
   }
 
@@ -135,9 +135,9 @@ class Team extends Entity {
           this.members.push(user)
         }
       })
-      .catch((error) => {
-        console.error("Error fetching members:", error);
-      });
+      .catch(error => {
+        console.error('Error fetching members:', error)
+      })
     this.approvalsCounter = 0
     this.neededApprovalsCounter = this.members.length
   }
