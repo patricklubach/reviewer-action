@@ -59,7 +59,7 @@ export class PullRequest {
    * @returns {void}
    * @throws {Error} If there is an error setting the reviewers.
    */
-  setPrReviewers(reviewers: Array<string>) {
+  setPrReviewers(reviewers: Array<string>): void {
     try {
       const userReviewers = reviewers.filter(reviewer =>
         reviewer.startsWith('user')

@@ -10,7 +10,6 @@ if (!repo) {
 }
 const [owner, _] = repo.split('/')
 
-// TODO: Implement iterator so that I can use rule.reviewers instead of rule.reviewers.reviewers
 /**
  * Represents a collection of reviewers who have been configured to review pull requests.
  */
@@ -26,6 +25,12 @@ export class Reviewers {
   constructor(reviewers: Array<string>) {
     this.reviewers = reviewers
     this.entities = this.#buildEntities()
+  }
+
+  *[Symbol.iterator]() {
+    for (const reviewer of this.reviewers) {
+      yield reviewer;
+    }
   }
 
   /**
@@ -83,14 +88,12 @@ class Entity {
 }
 
 /**
- * Represents a user in the system.
+ * Represents a user principle.
  *
  * @class User
  */
 class User extends Entity {
   /**
-   * Constructs a new User entity from the given principle string.
-   *
    * @param {string} principle - The principle string in the format 'user:username'
    * @super
    * @throws {Error} If the type is not 'user'
@@ -106,7 +109,7 @@ class User extends Entity {
 }
 
 /**
- * Represents a team in the system.
+ * Represents a Github team principle.
  *
  * @class Team
  */
@@ -115,9 +118,6 @@ class Team extends Entity {
   approvalsCounter: number
   neededApprovalsCounter: number
   /**
-   * Constructs a new Team entity from the given principle string.
-   * populates team members and other properties.
-   *
    * @param {string} principle - The principle string in the format 'team:team_name'
    * @super
    * @throws {Error} If the type is not 'team'
@@ -128,7 +128,16 @@ class Team extends Entity {
       throw new Error(`Type needs to be of type 'team'. Got: ${this.type}`)
     }
 
-    this.members = this.resolveTeam()
+    this.members = []
+    this.resolveTeam()
+      .then((users: User[]) => {
+        for (const user of users) {
+          this.members.push(user)
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching members:", error);
+      });
     this.approvalsCounter = 0
     this.neededApprovalsCounter = this.members.length
   }
@@ -139,10 +148,10 @@ class Team extends Entity {
    * @returns {Array} An array of User objects representing the team members
    * @throws {Error} If there's an issue fetching team members
    */
-  resolveTeam(): Promise<User[]> {
+  async resolveTeam(): Promise<User[]> {
     core.debug(`Getting members for the team ${this.name}`)
     try {
-      const response = client.request(
+      const response = await client.request(
         `GET /orgs/${owner}/teams/${this.name}/members`,
         {
           org: owner,
@@ -178,7 +187,7 @@ class Team extends Entity {
    * @param {string} name - The username to check
    * @returns {boolean} True if the user is in the team, false otherwise
    */
-  isMember(name: string) {
+  isMember(name: string): boolean {
     core.debug(`Check if ${name} is member of team ${this.name}`)
     return this.members.some(member => member.name === name)
   }
