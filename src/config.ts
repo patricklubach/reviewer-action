@@ -23,7 +23,7 @@ class ConfigValidationError extends Error {
 }
 
 /**
- * A class responsible for managing and validating configuration settings.
+ * Represents the configuration and its values for the github action.
  *
  * @class Config
  */
@@ -32,9 +32,6 @@ class Config {
   conditionType: string
   rules: Array<any>
   /**
-   * Constructs an instance of `Config` with the specified config file path.
-   * Reads and parses the configuration file, then initializes validation settings.
-   *
    * @param {string} configPath - The path to the YAML configuration file to read.
    */
   constructor(configPath: string) {

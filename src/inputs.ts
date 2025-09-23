@@ -11,10 +11,6 @@ export class Inputs {
   setReviewers: string
   token: string
 
-  /**
-   * Constructs an instance of `Inputs` to manage configuration parameters.
-   * Reads inputs from command line arguments or defaults if not provided.
-   */
   constructor() {
     this.configPath = core.getInput('reviewers_file', { required: false })
     this.prNumber = core.getInput('pr_number', { required: true })

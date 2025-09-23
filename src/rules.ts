@@ -15,8 +15,6 @@ export class Rule {
   default: string
 
   /**
-   * Constructs a new rule object with specified properties.
-   *
    * @param {Object} rule - The rule object containing configuration properties
    */
   constructor(rule: any) {
@@ -53,8 +51,6 @@ export class Rule {
 export class Rules {
   rules: Array<any>
   /**
-   * Constructs a new instance of the Rules class, initializing with provided rules.
-   *
    * @param {Array} rules - Array of rule objects to initialize with
    */
   constructor(rules: Array<any>) {
