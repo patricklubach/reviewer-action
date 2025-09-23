@@ -161,10 +161,10 @@ class Team extends Entity {
      * @returns {Array} An array of User objects representing the team members
      * @throws {Error} If there's an issue fetching team members
      */
-    async resolveTeam() {
+    resolveTeam() {
         core.debug(`Getting members for the team ${this.name}`);
         try {
-            const response = await client.request(`GET /orgs/${owner}/teams/${this.name}/members`, {
+            const response = client.request(`GET /orgs/${owner}/teams/${this.name}/members`, {
                 org: owner,
                 team_slug: this.name,
                 headers: {
