@@ -46,16 +46,14 @@ const core = __importStar(require("@actions/core"));
  * @class ConfigValidationError
  */
 class ConfigValidationError extends Error {
-    name;
-    /**
-     * Constructs a new instance of `ConfigValidationError` with the given message and optional additional arguments.
-     *
-     * @param {string} message - The error message to display.
-     * @param {...any} args - Additional arguments to pass to the super constructor (Error).
-     */
-    constructor(message, ...args) {
-        super(message, ...args);
+    constructor(message, ...params) {
+        super(...params);
+        // Maintains proper stack trace for where our error was thrown (non-standard)
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, ConfigValidationError);
+        }
         this.name = this.constructor.name;
+        this.message = message;
     }
 }
 /**

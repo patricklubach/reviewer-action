@@ -55,9 +55,9 @@ class Check {
         switch (rule.type) {
             case 'ALL':
                 core.debug(`Rule type is 'ALL'`);
-                for (let reviewer = 0; reviewer < rule.reviewers.reviewers.length; reviewer++) {
+                for (const reviewer of rule.reviewers) {
                     core.debug(`Validating reviewer: ${reviewer}`);
-                    const validated = pullRequestReviews.some(review => review.user.login === reviewer.name);
+                    const validated = pullRequestReviews.some(review => review.user.login === reviewer);
                     if (!validated) {
                         return false;
                     }
@@ -67,44 +67,16 @@ class Check {
                 core.debug(`Rule type is 'AMOUNT'`);
                 let approvalCounter = 0;
                 for (const reviewer of rule.reviewers) {
-                    core.debug(`Validating reviewer: ${reviewer.name}`);
-                    const validated = pullRequestReviews.some(review => review.user.login === reviewer.name);
+                    core.debug(`Validating reviewer: ${reviewer}`);
+                    const validated = pullRequestReviews.some(review => review.user.login === reviewer);
                     if (validated) {
                         approvalCounter++;
                     }
                 }
-                return approvalCounter >= rule.amount;
-            case 'ONE_OF_EACH':
-                core.debug(`Rule type is 'ONE_OF_EACH'`);
-                for (const review of reviews) {
-                    const name = review.user.login;
-                    core.debug(`Validating reviewer: ${name}`);
-                    // Search desired reviewers if matches pr reviewer
-                    // user reviewers take prcedence over team members
-                    for (const reviewer of reviewers) {
-                        if (reviewer.type === 'user') {
-                            if (name === reviewer.login && !reviewer.checked) {
-                                reviewer.checked = true;
-                                break;
-                            }
-                        }
-                    }
-                    // when reviewer is not found in defined users. Search for reviewer in teams
-                    for (const reviewer of reviewers) {
-                        if (reviewer.type === 'team') {
-                            if (reviewer.isMember(name) && !reviewer.checked) {
-                                reviewer.checked = true;
-                            }
-                        }
-                    }
-                    // check if all reviewers are checked
-                    for (const reviewer of reviewers) {
-                        if (!reviewer.checked) {
-                            return false;
-                        }
-                    }
+                if (!rule.amount) {
+                    return true;
                 }
-                return true;
+                return approvalCounter >= rule.amount;
             default:
                 return false;
         }

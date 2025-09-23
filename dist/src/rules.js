@@ -89,6 +89,11 @@ class Rules {
         this.rules = [];
         this.init(rules);
     }
+    *[Symbol.iterator]() {
+        for (const rule of this.rules) {
+            yield rule;
+        }
+    }
     /**
      * Initializes the Rules class by mapping over provided rules and creating Rule instances.
      *

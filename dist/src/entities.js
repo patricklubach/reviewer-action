@@ -43,7 +43,6 @@ if (!repo) {
     throw new Error('GITHUB_REPOSITORY environment variable is not defined');
 }
 const [owner, _] = repo.split('/');
-// TODO: Implement iterator so that I can use rule.reviewers instead of rule.reviewers.reviewers
 /**
  * Represents a collection of reviewers who have been configured to review pull requests.
  */
@@ -59,6 +58,11 @@ class Reviewers {
     constructor(reviewers) {
         this.reviewers = reviewers;
         this.entities = this.#buildEntities();
+    }
+    *[Symbol.iterator]() {
+        for (const reviewer of this.reviewers) {
+            yield reviewer;
+        }
     }
     /**
      * Builds entities from the list of reviewers.
@@ -112,14 +116,12 @@ class Entity {
     }
 }
 /**
- * Represents a user in the system.
+ * Represents a user principle.
  *
  * @class User
  */
 class User extends Entity {
     /**
-     * Constructs a new User entity from the given principle string.
-     *
      * @param {string} principle - The principle string in the format 'user:username'
      * @super
      * @throws {Error} If the type is not 'user'
@@ -132,7 +134,7 @@ class User extends Entity {
     }
 }
 /**
- * Represents a team in the system.
+ * Represents a Github team principle.
  *
  * @class Team
  */
@@ -141,9 +143,6 @@ class Team extends Entity {
     approvalsCounter;
     neededApprovalsCounter;
     /**
-     * Constructs a new Team entity from the given principle string.
-     * populates team members and other properties.
-     *
      * @param {string} principle - The principle string in the format 'team:team_name'
      * @super
      * @throws {Error} If the type is not 'team'
@@ -153,7 +152,16 @@ class Team extends Entity {
         if (this.type !== 'team') {
             throw new Error(`Type needs to be of type 'team'. Got: ${this.type}`);
         }
-        this.members = this.resolveTeam();
+        this.members = [];
+        this.resolveTeam()
+            .then((users) => {
+            for (const user of users) {
+                this.members.push(user);
+            }
+        })
+            .catch((error) => {
+            console.error("Error fetching members:", error);
+        });
         this.approvalsCounter = 0;
         this.neededApprovalsCounter = this.members.length;
     }
@@ -163,10 +171,10 @@ class Team extends Entity {
      * @returns {Array} An array of User objects representing the team members
      * @throws {Error} If there's an issue fetching team members
      */
-    resolveTeam() {
+    async resolveTeam() {
         core.debug(`Getting members for the team ${this.name}`);
         try {
-            const response = client.request(`GET /orgs/${owner}/teams/${this.name}/members`, {
+            const response = await client.request(`GET /orgs/${owner}/teams/${this.name}/members`, {
                 org: owner,
                 team_slug: this.name,
                 headers: {
