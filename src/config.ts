@@ -1,7 +1,7 @@
-import fs from 'fs'
-import YAML from 'yaml'
+import fs from 'fs';
+import YAML from 'yaml';
 
-import * as core from '@actions/core'
+import * as core from '@actions/core';
 
 /**
  * A custom error class used to indicate invalid configuration conditions.
@@ -9,17 +9,16 @@ import * as core from '@actions/core'
  * @class ConfigValidationError
  */
 class ConfigValidationError extends Error {
-  name: string
+  constructor(message: string, ...params: string[]) {
+    super(...params)
 
-  /**
-   * Constructs a new instance of `ConfigValidationError` with the given message and optional additional arguments.
-   *
-   * @param {string} message - The error message to display.
-   * @param {...any} args - Additional arguments to pass to the super constructor (Error).
-   */
-  constructor(message: string, ...args: string[]) {
-    super(message, ...args)
+    // Maintains proper stack trace for where our error was thrown (non-standard)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ConfigValidationError);
+    }
+
     this.name = this.constructor.name
+    this.message = message
   }
 }
 
@@ -91,4 +90,5 @@ class Config {
   }
 }
 
-export { Config }
+export { Config };
+
