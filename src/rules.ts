@@ -47,7 +47,6 @@ export class Rule {
  *
  * @class Rules
  */
-
 export class Rules {
   rules: Array<any>
   /**
