@@ -37,9 +37,7 @@ export class PullRequest {
   requestedReviewers: any
   requestedTeams: any
   reviews: any
-  /**
-   * A class representing a pull request with methods to manage its reviews.
-   */
+
   constructor(data: any, reviews: any) {
     this.pullRequestRaw = data
     this.number = this.pullRequestRaw.number

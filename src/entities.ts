@@ -17,9 +17,6 @@ export class Reviewers {
   reviewers: Array<string>
   entities: Array<Entity>
   /**
-   * Constructs an instance of `Reviewers` with the provided list of reviewers.
-   * Each reviewer can be in the format 'user:username' or 'team:team_name'.
-   *
    * @param {Array} reviewers - Array of strings specifying reviewers in the format 'user:username' or 'team:team_name'
    */
   constructor(reviewers: Array<string>) {
@@ -69,8 +66,6 @@ class Entity {
   name: string
   checked: boolean
   /**
-   * Constructs an Entity from the given principle string in the format 'type:name'.
-   *
    * @param {string} principle - The principle string in the format 'type:name' e.g., 'user:john'
    * @throws {Error} If the format is invalid
    */
