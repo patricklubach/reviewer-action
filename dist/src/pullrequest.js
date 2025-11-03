@@ -71,9 +71,6 @@ class PullRequest {
     requestedReviewers;
     requestedTeams;
     reviews;
-    /**
-     * A class representing a pull request with methods to manage its reviews.
-     */
     constructor(data, reviews) {
         this.pullRequestRaw = data;
         this.number = this.pullRequestRaw.number;
@@ -94,8 +91,18 @@ class PullRequest {
      */
     setPrReviewers(reviewers) {
         try {
-            const userReviewers = reviewers.filter(reviewer => reviewer.startsWith('user'));
-            const teamReviewers = reviewers.filter(reviewer => reviewer.startsWith('team'));
+            const userReviewers = [];
+            for (const reviewer of reviewers) {
+                if (reviewer.startsWith('user')) {
+                    userReviewers.push(reviewer.split(':')[0]);
+                }
+            }
+            const teamReviewers = [];
+            for (const reviewer of reviewers) {
+                if (reviewer.startsWith('team')) {
+                    teamReviewers.push(reviewer.split(':')[0]);
+                }
+            }
             core.info(`Setting reviewers for pull request #${this.number}`);
             octokit.rest.pulls.requestReviewers({
                 owner: this.repo.owner,

@@ -96,7 +96,7 @@ export class Rules {
    *
    * @private
    */
-  getMatchingRule(condition: string) {
+  getMatchingRule(condition: string): Rule {
     core.debug('Attempting to find matching rule for condition: ' + condition)
     try {
       for (const rule of this.rules) {

@@ -3,6 +3,7 @@
 */
 
 import * as core from '@actions/core'
+import { Reviewers } from './entities'
 import { PullRequest } from './pullrequest'
 
 /**
@@ -30,21 +31,22 @@ function validateEvent(eventName: string) {
  * @param {Object} pullRequest - Pull request object containing repository details
  * @returns {boolean} true if all required reviewers are correctly set, false otherwise
  */
-function reviewersSet(
-  reviewers: Array<string>,
-  pullRequest: PullRequest
-): boolean {
+function reviewersSet(reviewers: Reviewers, pullRequest: PullRequest): boolean {
   core.info('Checking if reviewers are already set')
-  const userReviewers = reviewers.filter(reviewer => {
+
+  const userReviewers: Array<string> = []
+  for (const reviewer of reviewers) {
     if (reviewer.startsWith('user')) {
-      return reviewer.split(':')[0]
+      userReviewers.push(reviewer.split(':')[0])
     }
-  })
-  const teamReviewers = reviewers.filter(reviewer => {
+  }
+
+  const teamReviewers: Array<string> = []
+  for (const reviewer of reviewers) {
     if (reviewer.startsWith('team')) {
-      return reviewer.split(':')[0]
+      teamReviewers.push(reviewer.split(':')[0])
     }
-  })
+  }
 
   const pullRequestRequestedReviewerUsers = pullRequest.requestedReviewers
   const pullRequestRequestedReviewerTeams = pullRequest.requestedTeams
@@ -84,7 +86,7 @@ function reviewersSet(
  * @returns {string} Corresponding condition value
  * @throws Error - If invalid condition type is provided
  */
-function getCondition(conditionType: string, pullRequest: PullRequest) {
+function getCondition(conditionType: string, pullRequest: PullRequest): string {
   core.debug(
     `Determine condition value based on condition type '${conditionType}'`
   )
@@ -104,7 +106,7 @@ function getCondition(conditionType: string, pullRequest: PullRequest) {
  * @returns {Array} Filtered list of approved reviews
  * @throws Error - If filtering fails
  */
-function getApprovedReviews(reviews: any) {
+function getApprovedReviews(reviews: any): Array<any> {
   core.info('Filtering reviews by status = approved')
   try {
     return reviews.filter((review: any) => review.state === 'APPROVED')

@@ -29974,7 +29974,7 @@ class ConfigValidationError extends Error {
     }
 }
 /**
- * A class responsible for managing and validating configuration settings.
+ * Represents the configuration and its values for the github action.
  *
  * @class Config
  */
@@ -29983,9 +29983,6 @@ class Config {
     conditionType;
     rules;
     /**
-     * Constructs an instance of `Config` with the specified config file path.
-     * Reads and parses the configuration file, then initializes validation settings.
-     *
      * @param {string} configPath - The path to the YAML configuration file to read.
      */
     constructor(configPath) {
@@ -30092,9 +30089,6 @@ class Reviewers {
     reviewers;
     entities;
     /**
-     * Constructs an instance of `Reviewers` with the provided list of reviewers.
-     * Each reviewer can be in the format 'user:username' or 'team:team_name'.
-     *
      * @param {Array} reviewers - Array of strings specifying reviewers in the format 'user:username' or 'team:team_name'
      */
     constructor(reviewers) {
@@ -30109,7 +30103,6 @@ class Reviewers {
     /**
      * Builds entities from the list of reviewers.
      *
-     * @param {Array} reviewers - Array of reviewer strings
      * @returns {Array} An array of Entity objects, either User or Team
      */
     #buildEntities() {
@@ -30141,8 +30134,6 @@ class Entity {
     name;
     checked;
     /**
-     * Constructs an Entity from the given principle string in the format 'type:name'.
-     *
      * @param {string} principle - The principle string in the format 'type:name' e.g., 'user:john'
      * @throws {Error} If the format is invalid
      */
@@ -30201,8 +30192,8 @@ class Team extends Entity {
                 this.members.push(user);
             }
         })
-            .catch((error) => {
-            console.error("Error fetching members:", error);
+            .catch(error => {
+            console.error('Error fetching members:', error);
         });
         this.approvalsCounter = 0;
         this.neededApprovalsCounter = this.members.length;
@@ -30303,10 +30294,6 @@ class Inputs {
     prNumber;
     setReviewers;
     token;
-    /**
-     * Constructs an instance of `Inputs` to manage configuration parameters.
-     * Reads inputs from command line arguments or defaults if not provided.
-     */
     constructor() {
         this.configPath = core.getInput('reviewers_file', { required: false });
         this.prNumber = core.getInput('pr_number', { required: true });
@@ -30387,7 +30374,7 @@ async function run() {
         utils.validateEvent(github.context.eventName);
         const eventPayload = github?.context?.payload;
         if (!eventPayload) {
-            throw new Error("event payload is empty.");
+            throw new Error('event payload is empty.');
         }
         if (!eventPayload.pull_request) {
             throw new Error('event payload does not contain pull_request.');
@@ -30515,9 +30502,6 @@ class PullRequest {
     requestedReviewers;
     requestedTeams;
     reviews;
-    /**
-     * A class representing a pull request with methods to manage its reviews.
-     */
     constructor(data, reviews) {
         this.pullRequestRaw = data;
         this.number = this.pullRequestRaw.number;
@@ -30538,8 +30522,18 @@ class PullRequest {
      */
     setPrReviewers(reviewers) {
         try {
-            const userReviewers = reviewers.filter(reviewer => reviewer.startsWith('user'));
-            const teamReviewers = reviewers.filter(reviewer => reviewer.startsWith('team'));
+            const userReviewers = [];
+            for (const reviewer of reviewers) {
+                if (reviewer.startsWith('user')) {
+                    userReviewers.push(reviewer.split(':')[0]);
+                }
+            }
+            const teamReviewers = [];
+            for (const reviewer of reviewers) {
+                if (reviewer.startsWith('team')) {
+                    teamReviewers.push(reviewer.split(':')[0]);
+                }
+            }
             core.info(`Setting reviewers for pull request #${this.number}`);
             octokit.rest.pulls.requestReviewers({
                 owner: this.repo.owner,
@@ -30649,8 +30643,6 @@ class Rule {
     reviewers;
     default;
     /**
-     * Constructs a new rule object with specified properties.
-     *
      * @param {Object} rule - The rule object containing configuration properties
      */
     constructor(rule) {
@@ -30682,8 +30674,6 @@ exports.Rule = Rule;
 class Rules {
     rules;
     /**
-     * Constructs a new instance of the Rules class, initializing with provided rules.
-     *
      * @param {Array} rules - Array of rule objects to initialize with
      */
     constructor(rules) {
@@ -30843,16 +30833,18 @@ function validateEvent(eventName) {
  */
 function reviewersSet(reviewers, pullRequest) {
     core.info('Checking if reviewers are already set');
-    const userReviewers = reviewers.filter(reviewer => {
+    const userReviewers = [];
+    for (const reviewer of reviewers) {
         if (reviewer.startsWith('user')) {
-            return reviewer.split(':')[0];
+            userReviewers.push(reviewer.split(':')[0]);
         }
-    });
-    const teamReviewers = reviewers.filter(reviewer => {
+    }
+    const teamReviewers = [];
+    for (const reviewer of reviewers) {
         if (reviewer.startsWith('team')) {
-            return reviewer.split(':')[0];
+            teamReviewers.push(reviewer.split(':')[0]);
         }
-    });
+    }
     const pullRequestRequestedReviewerUsers = pullRequest.requestedReviewers;
     const pullRequestRequestedReviewerTeams = pullRequest.requestedTeams;
     // Check if desired reviewer user are already assigned to the pr
