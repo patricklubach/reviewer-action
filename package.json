@@ -33,11 +33,11 @@
     "yaml": "^2.8.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.36.0",
-    "eslint": "^9.36.0",
-    "jest": "^30.0.5",
+    "@eslint/js": "^9.39.0",
+    "eslint": "^9.39.0",
+    "jest": "^30.2.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "overrides": {
     "glob": "10.3.10"
