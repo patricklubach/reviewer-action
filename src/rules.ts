@@ -109,29 +109,23 @@ export class Rules {
         if (typeof rule.regex === 'string') {
           const regex = new RegExp(rule.regex)
           core.debug(
-            `Testing condition "${condition}" against regex ${rule.regex}`
+            `Testing condition '${condition}' against regex '${rule.regex}'`
           )
           if (regex.test(condition)) {
+            core.debug(
+            `Regex '${rule.regex}' matches condition '${condition}'`
+            )
             return rule
-          }
-        } else if (rule.regex instanceof RegExp) {
-          const matches = rule.regex.test(condition)
-          core.debug(
-            `Condition "${condition}" matches regex ${rule.regex.toString()}: ${matches}`
-          )
-          if (matches) {
-            return rule
+          } else {
+            core.debug(
+            `Regex '${rule.regex}' does not match condition '${condition}'`
+            )
           }
         } else {
           throw new Error(
-            'Invalid regex type provided. Please use a string or RegExp object.'
+            'Invalid regex type provided. Please use a valid regular expression.'
           )
         }
-
-        // If no match found, move to the next rule
-        core.warning(
-          `No rule matches pattern ${rule.type} "${condition}". Trying to fallback to default rule`
-        )
       }
     } catch (error: any) {
       throw new Error(
@@ -140,6 +134,10 @@ export class Rules {
     }
 
     try {
+      // If no match found, move to the next rule
+      core.warning(
+        `No rule matches condition "${condition}". Trying to fallback to default rule!`
+      )
       return this.getDefaultRule()
     } catch (error: any) {
       core.error(error.message)
