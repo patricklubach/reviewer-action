@@ -50,9 +50,6 @@ class Reviewers {
     reviewers;
     entities;
     /**
-     * Constructs an instance of `Reviewers` with the provided list of reviewers.
-     * Each reviewer can be in the format 'user:username' or 'team:team_name'.
-     *
      * @param {Array} reviewers - Array of strings specifying reviewers in the format 'user:username' or 'team:team_name'
      */
     constructor(reviewers) {
@@ -67,7 +64,6 @@ class Reviewers {
     /**
      * Builds entities from the list of reviewers.
      *
-     * @param {Array} reviewers - Array of reviewer strings
      * @returns {Array} An array of Entity objects, either User or Team
      */
     #buildEntities() {
@@ -99,8 +95,6 @@ class Entity {
     name;
     checked;
     /**
-     * Constructs an Entity from the given principle string in the format 'type:name'.
-     *
      * @param {string} principle - The principle string in the format 'type:name' e.g., 'user:john'
      * @throws {Error} If the format is invalid
      */

@@ -65,16 +65,18 @@ function validateEvent(eventName) {
  */
 function reviewersSet(reviewers, pullRequest) {
     core.info('Checking if reviewers are already set');
-    const userReviewers = reviewers.filter(reviewer => {
+    const userReviewers = [];
+    for (const reviewer of reviewers) {
         if (reviewer.startsWith('user')) {
-            return reviewer.split(':')[0];
+            userReviewers.push(reviewer.split(':')[0]);
         }
-    });
-    const teamReviewers = reviewers.filter(reviewer => {
+    }
+    const teamReviewers = [];
+    for (const reviewer of reviewers) {
         if (reviewer.startsWith('team')) {
-            return reviewer.split(':')[0];
+            teamReviewers.push(reviewer.split(':')[0]);
         }
-    });
+    }
     const pullRequestRequestedReviewerUsers = pullRequest.requestedReviewers;
     const pullRequestRequestedReviewerTeams = pullRequest.requestedTeams;
     // Check if desired reviewer user are already assigned to the pr

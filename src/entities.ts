@@ -33,7 +33,6 @@ export class Reviewers {
   /**
    * Builds entities from the list of reviewers.
    *
-   * @param {Array} reviewers - Array of reviewer strings
    * @returns {Array} An array of Entity objects, either User or Team
    */
   #buildEntities(): Array<Entity> {

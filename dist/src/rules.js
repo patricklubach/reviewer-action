@@ -48,8 +48,6 @@ class Rule {
     reviewers;
     default;
     /**
-     * Constructs a new rule object with specified properties.
-     *
      * @param {Object} rule - The rule object containing configuration properties
      */
     constructor(rule) {
@@ -81,8 +79,6 @@ exports.Rule = Rule;
 class Rules {
     rules;
     /**
-     * Constructs a new instance of the Rules class, initializing with provided rules.
-     *
      * @param {Array} rules - Array of rule objects to initialize with
      */
     constructor(rules) {
