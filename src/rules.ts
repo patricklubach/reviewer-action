@@ -112,13 +112,11 @@ export class Rules {
             `Testing condition '${condition}' against regex '${rule.regex}'`
           )
           if (regex.test(condition)) {
-            core.debug(
-            `Regex '${rule.regex}' matches condition '${condition}'`
-            )
+            core.debug(`Regex '${rule.regex}' matches condition '${condition}'`)
             return rule
           } else {
             core.debug(
-            `Regex '${rule.regex}' does not match condition '${condition}'`
+              `Regex '${rule.regex}' does not match condition '${condition}'`
             )
           }
         } else {
