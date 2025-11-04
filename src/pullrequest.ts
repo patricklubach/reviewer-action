@@ -32,6 +32,7 @@ export class PullRequest {
   pullRequestRaw: any
   number: number
   repo: any
+  owner: string
   branchName: string
   title: string
   requestedReviewers: any
@@ -43,6 +44,7 @@ export class PullRequest {
     this.number = this.pullRequestRaw.number
     this.repo = this.pullRequestRaw.head.repo
     this.repo.org = this.repo.owner.login
+    this.owner = this.pullRequestRaw.head.repo.owner.login
     this.branchName = this.pullRequestRaw.head.ref
     this.title = this.pullRequestRaw.title
     this.requestedReviewers = this.pullRequestRaw.requested_reviewers
@@ -74,15 +76,31 @@ export class PullRequest {
       }
 
       core.info(`Setting reviewers for pull request #${this.number}`)
+      core.debug(`owner: ${this.owner}`)
+      core.debug(`repo: ${this.repo.name}`)
+      core.debug(`pull_number: ${this.number}`)
       core.debug(`user reviewers: ${userReviewers}`)
-      core.debug(`user reviewers: ${teamReviewers}`)
-      octokit.rest.pulls.requestReviewers({
-        owner: this.repo.owner,
-        repo: this.repo.name,
-        pull_number: this.number,
-        reviewers: userReviewers,
-        team_reviewers: teamReviewers
-      })
+      core.debug(`team reviewers: ${teamReviewers}`)
+      // octokit.rest.pulls.requestReviewers({
+      //   owner: this.repo.owner,
+      //   repo: this.repo.name,
+      //   pull_number: this.number,
+      //   reviewers: userReviewers,
+      //   team_reviewers: teamReviewers
+      // })
+      octokit.request(
+        'POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers',
+        {
+          owner: this.owner,
+          repo: this.repo.name,
+          pull_number: this.number,
+          reviewers: userReviewers,
+          team_reviewers: teamReviewers,
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28'
+          }
+        }
+      )
     } catch (error: any) {
       throw new Error(
         `The reviewers for pull request #${this.number} could not be set. Details: ${error.message}`

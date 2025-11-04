@@ -59,7 +59,7 @@ export async function run() {
     const matchingRule = rules.getMatchingRule(condition)
 
     const reviewers = matchingRule.reviewers
-    core.debug('Reviewers are:')
+    core.debug('Configured reviewers are:')
     for (const reviewer of reviewers) {
       core.debug(`- ${reviewer}`)
     }

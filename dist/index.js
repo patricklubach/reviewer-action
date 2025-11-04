@@ -30399,7 +30399,7 @@ async function run() {
         const condition = utils.getCondition(config.conditionType, pullRequest);
         const matchingRule = rules.getMatchingRule(condition);
         const reviewers = matchingRule.reviewers;
-        core.debug('Reviewers are:');
+        core.debug('Configured reviewers are:');
         for (const reviewer of reviewers) {
             core.debug(`- ${reviewer}`);
         }
@@ -30507,6 +30507,7 @@ class PullRequest {
     pullRequestRaw;
     number;
     repo;
+    owner;
     branchName;
     title;
     requestedReviewers;
@@ -30517,6 +30518,7 @@ class PullRequest {
         this.number = this.pullRequestRaw.number;
         this.repo = this.pullRequestRaw.head.repo;
         this.repo.org = this.repo.owner.login;
+        this.owner = this.pullRequestRaw.head.repo.owner.login;
         this.branchName = this.pullRequestRaw.head.ref;
         this.title = this.pullRequestRaw.title;
         this.requestedReviewers = this.pullRequestRaw.requested_reviewers;
@@ -30545,14 +30547,27 @@ class PullRequest {
                 }
             }
             core.info(`Setting reviewers for pull request #${this.number}`);
+            core.debug(`owner: ${this.owner}`);
+            core.debug(`repo: ${this.repo.name}`);
+            core.debug(`pull_number: ${this.number}`);
             core.debug(`user reviewers: ${userReviewers}`);
-            core.debug(`user reviewers: ${teamReviewers}`);
-            octokit.rest.pulls.requestReviewers({
-                owner: this.repo.owner,
+            core.debug(`team reviewers: ${teamReviewers}`);
+            // octokit.rest.pulls.requestReviewers({
+            //   owner: this.repo.owner,
+            //   repo: this.repo.name,
+            //   pull_number: this.number,
+            //   reviewers: userReviewers,
+            //   team_reviewers: teamReviewers
+            // })
+            octokit.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', {
+                owner: this.owner,
                 repo: this.repo.name,
                 pull_number: this.number,
                 reviewers: userReviewers,
-                team_reviewers: teamReviewers
+                team_reviewers: teamReviewers,
+                headers: {
+                    'X-GitHub-Api-Version': '2022-11-28'
+                }
             });
         }
         catch (error) {
