@@ -57,16 +57,27 @@ export async function run() {
     const rules = new Rules(config.rules)
     const condition = utils.getCondition(config.conditionType, pullRequest)
     const matchingRule = rules.getMatchingRule(condition)
+
     const reviewers = matchingRule.reviewers
+    core.debug('Configured reviewers are:')
+    for (const reviewer of reviewers) {
+      core.debug(`- ${reviewer}`)
+    }
 
     // if set_reviewers action property is set to true on the action,
     // check if requested reviewers are already set on pr.
     // if not these are set according to the reviewers rule.
     // Note: All previously set reviewers on the pr are overwritten and reviews are resetted!
     if (inputs.setReviewers) {
-      core.debug('set_reviewers property is set')
-      if (!utils.reviewersSet(reviewers, pullRequest))
-        pullRequest.setPrReviewers(reviewers.reviewers)
+      core.debug('set_reviewers property is set on the action')
+      // if (!utils.reviewersSet(reviewers, pullRequest)) {
+      //   core.info(
+      //     `Not all reviewers are set. Setting reviewers on pull request #${pullRequest}`
+      //   )
+      pullRequest.setPrReviewers(reviewers.reviewers)
+      // } else {
+      //   core.info('All reviewers are set')
+      // }
       return
     }
 

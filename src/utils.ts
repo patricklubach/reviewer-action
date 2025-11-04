@@ -51,6 +51,13 @@ function reviewersSet(reviewers: Reviewers, pullRequest: PullRequest): boolean {
   const pullRequestRequestedReviewerUsers = pullRequest.requestedReviewers
   const pullRequestRequestedReviewerTeams = pullRequest.requestedTeams
 
+  const setReviewers = pullRequestRequestedReviewerUsers.concat(
+    pullRequestRequestedReviewerTeams
+  )
+  core.debug(
+    `Already set reviewers are: ${setReviewers ? setReviewers : 'None'}`
+  )
+
   // Check if desired reviewer user are already assigned to the pr
   pullRequestRequestedReviewerUsers.forEach((reviewer: any) => {
     let reviewerName = reviewer.login
