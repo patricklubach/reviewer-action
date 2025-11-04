@@ -13,10 +13,10 @@
     "review_comment_url": "https://api.github.com/repos/patricklubach/approver-action/pulls/comments{/number}",
     "comments_url": "https://api.github.com/repos/patricklubach/approver-action/issues/48/comments",
     "statuses_url": "https://api.github.com/repos/patricklubach/approver-action/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e",
-    "number": 48,
+    "number": 80,
     "state": "open",
     "locked": true,
-    "title": "feature/enable-types",
+    "title": "build(deps): Bump actions/setup-node from 4 to 6",
     "user": {
       "login": "patricklubach",
       "id": 1,
@@ -158,8 +158,8 @@
     ],
     "requested_teams": [],
     "head": {
-      "label": "patricklubach:feat/implement-types",
-      "ref": "feat/implement-types",
+      "label": "patricklubach:dependabot/github_actions/actions/setup-node-6",
+      "ref": "dependabot/github_actions/actions/setup-node-6",
       "sha": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
       "user": {
         "login": "patricklubach",

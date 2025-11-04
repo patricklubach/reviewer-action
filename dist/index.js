@@ -30399,14 +30399,24 @@ async function run() {
         const condition = utils.getCondition(config.conditionType, pullRequest);
         const matchingRule = rules.getMatchingRule(condition);
         const reviewers = matchingRule.reviewers;
+        core.debug('Reviewers are:');
+        for (const reviewer of reviewers) {
+            core.debug(`- ${reviewer}`);
+        }
         // if set_reviewers action property is set to true on the action,
         // check if requested reviewers are already set on pr.
         // if not these are set according to the reviewers rule.
         // Note: All previously set reviewers on the pr are overwritten and reviews are resetted!
         if (inputs_js_1.inputs.setReviewers) {
-            core.debug('set_reviewers property is set');
-            if (!utils.reviewersSet(reviewers, pullRequest))
-                pullRequest.setPrReviewers(reviewers.reviewers);
+            core.debug('set_reviewers property is set on the action');
+            // if (!utils.reviewersSet(reviewers, pullRequest)) {
+            //   core.info(
+            //     `Not all reviewers are set. Setting reviewers on pull request #${pullRequest}`
+            //   )
+            pullRequest.setPrReviewers(reviewers.reviewers);
+            // } else {
+            //   core.info('All reviewers are set')
+            // }
             return;
         }
         // Filter list of reviews by status 'APPROVED'
@@ -30525,16 +30535,18 @@ class PullRequest {
             const userReviewers = [];
             for (const reviewer of reviewers) {
                 if (reviewer.startsWith('user')) {
-                    userReviewers.push(reviewer.split(':')[0]);
+                    userReviewers.push(reviewer.split(':')[1]);
                 }
             }
             const teamReviewers = [];
             for (const reviewer of reviewers) {
                 if (reviewer.startsWith('team')) {
-                    teamReviewers.push(reviewer.split(':')[0]);
+                    teamReviewers.push(reviewer.split(':')[1]);
                 }
             }
             core.info(`Setting reviewers for pull request #${this.number}`);
+            core.debug(`user reviewers: ${userReviewers}`);
+            core.debug(`user reviewers: ${teamReviewers}`);
             octokit.rest.pulls.requestReviewers({
                 owner: this.repo.owner,
                 repo: this.repo.name,
@@ -30844,6 +30856,8 @@ function reviewersSet(reviewers, pullRequest) {
     }
     const pullRequestRequestedReviewerUsers = pullRequest.requestedReviewers;
     const pullRequestRequestedReviewerTeams = pullRequest.requestedTeams;
+    const setReviewers = pullRequestRequestedReviewerUsers.concat(pullRequestRequestedReviewerTeams);
+    core.debug(`Already set reviewers are: ${setReviewers ? setReviewers : 'None'}`);
     // Check if desired reviewer user are already assigned to the pr
     pullRequestRequestedReviewerUsers.forEach((reviewer) => {
         let reviewerName = reviewer.login;

@@ -14,7 +14,7 @@
     "format:check": "npx prettier --check .",
     "lint": "npx eslint .",
     "package": "npx ncc build src/index.ts -o dist --source-map --license licenses.txt",
-    "test:local:check": "act pull_request -e test/event.pull_request_example.json -W .github/workflows/check_reviews.yaml -j 'check_reviews' -s GITHUB_TOKEN=\"$(gh auth token --hostname github.com --user patricklubach)\" --input-file action.inputs",
+    "test:local:check": "act pull_request -e test/event.pull_request_example.json -W .github/workflows/set_reviewers.yaml -j 'set_reviewers' -s GITHUB_TOKEN=\"$(gh auth token --hostname github.com --user patricklubach)\" --input-file action.inputs --verbose",
     "update:lock": "npm update --save --include=dev",
     "test": "jest"
   },

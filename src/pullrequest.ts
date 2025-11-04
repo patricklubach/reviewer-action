@@ -62,18 +62,20 @@ export class PullRequest {
       const userReviewers: Array<string> = []
       for (const reviewer of reviewers) {
         if (reviewer.startsWith('user')) {
-          userReviewers.push(reviewer.split(':')[0])
+          userReviewers.push(reviewer.split(':')[1])
         }
       }
 
       const teamReviewers: Array<string> = []
       for (const reviewer of reviewers) {
         if (reviewer.startsWith('team')) {
-          teamReviewers.push(reviewer.split(':')[0])
+          teamReviewers.push(reviewer.split(':')[1])
         }
       }
 
       core.info(`Setting reviewers for pull request #${this.number}`)
+      core.debug(`user reviewers: ${userReviewers}`)
+      core.debug(`user reviewers: ${teamReviewers}`)
       octokit.rest.pulls.requestReviewers({
         owner: this.repo.owner,
         repo: this.repo.name,
