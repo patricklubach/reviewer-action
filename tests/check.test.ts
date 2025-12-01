@@ -1,3 +1,3 @@
+import {describe, expect, test} from '@jest/globals';
 const check = require('./src/check');
-
-test('')
+import check from './src/'

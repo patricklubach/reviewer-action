@@ -16,7 +16,8 @@
     "package": "npx ncc build src/index.ts -o dist --source-map --license licenses.txt",
     "test:local:check": "act pull_request -e test/event.pull_request_example.json -W .github/workflows/set_reviewers.yaml -j 'set_reviewers' -s GITHUB_TOKEN=\"$(gh auth token --hostname github.com --user patricklubach)\" --input-file action.inputs --verbose",
     "update:lock": "npm update --save --include=dev",
-    "test": "jest"
+    "test": "jest --config ./jest.config.js",
+    "test:watch": "jest --watch --config ./jest.config.js"
   },
   "keywords": [
     "GitHub",
@@ -34,8 +35,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
+    "@jest/globals": "^30.2.0",
     "eslint": "^9.39.0",
     "jest": "^30.2.0",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
