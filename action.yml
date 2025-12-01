@@ -1,4 +1,4 @@
-name: 'Reviewers Action'
+name: 'PR Reviewers Action'
 description: 'GitHub action that checks if approval rule matches'
 inputs:
   reviewers_file:
