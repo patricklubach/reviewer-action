@@ -28,7 +28,7 @@
     "@actions/core": "^1.11.1",
     "@actions/github": "^9.1.1",
     "@octokit/action": "^8.0.4",
-    "@octokit/core": "^7.0.6",
+    "@octokit/core": "^7.0.7",
     "octokit": "^5.0.5",
     "yaml": "^2.9.0"
   },
